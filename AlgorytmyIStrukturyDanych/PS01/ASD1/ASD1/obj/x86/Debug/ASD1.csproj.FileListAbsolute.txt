@@ -1,0 +1,6 @@
+/Users/wojciechmojsiejuk/Projects/ASD1/ASD1/bin/Debug/ASD1.exe
+/Users/wojciechmojsiejuk/Projects/ASD1/ASD1/bin/Debug/ASD1.pdb
+/Users/wojciechmojsiejuk/Projects/ASD1/ASD1/obj/x86/Debug/ASD1.csprojResolveAssemblyReference.cache
+/Users/wojciechmojsiejuk/Projects/ASD1/ASD1/obj/x86/Debug/ASD1.csproj.CoreCompileInputs.cache
+/Users/wojciechmojsiejuk/Projects/ASD1/ASD1/obj/x86/Debug/ASD1.exe
+/Users/wojciechmojsiejuk/Projects/ASD1/ASD1/obj/x86/Debug/ASD1.pdb
