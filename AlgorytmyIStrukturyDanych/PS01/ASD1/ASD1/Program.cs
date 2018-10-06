@@ -7,22 +7,15 @@ namespace ASD1
     {
         public static void Main(string[] args)
         {
-			/*try
-            {   // Open the text file using a stream reader.
-                using (StreamReader sr = new StreamReader("input.txt"))
-                {
-                    // Read the stream to a string, and write the string to the console.
-                    String line = sr.ReadToEnd();
-                    Console.WriteLine(line);
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("The file could not be read:");
-                Console.WriteLine(e.Message);
-            }
-			int file_size = File.ReadLines(@"input.txt").Count();*/
-			int[] input_array = new int[]{2,3,4,4,5,1,3,2,5,4};//example array
+			StreamReader input_file = new StreamReader("in.txt");
+			string[] lines = File.ReadAllLines("in.txt");
+			input_file.Close();
+			int file_size = Int32.Parse(lines[0]);
+            int[] input_array = new int[file_size];
+			for (int i = 1; i <= file_size;i++)
+			{
+				input_array[i - 1] = Int32.Parse(lines[i]);
+			}
             /*
              * bool used to control while loop
              * it checks if any merging happened in current loop sesion
@@ -86,7 +79,9 @@ namespace ASD1
 				if (max_value_of_input_array * factor * 2 < counting_array.Length)
 					factor *= 2;
 			}
-			Console.WriteLine(result_of_counting);
+			StreamWriter output_file = new StreamWriter("out.txt");
+			output_file.WriteLine(result_of_counting);
+			output_file.Close();
         }
     }
 }
