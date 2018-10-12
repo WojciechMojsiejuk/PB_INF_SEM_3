@@ -6,14 +6,16 @@ namespace ASD1{
     {
         public static void Main(string[] args)
         {
-			StreamWriter test = new StreamWriter("8.txt");
+			/*
+			 * StreamWriter test = new StreamWriter("8.txt");
 			test.WriteLine(1000);
 			for (int o = 1; o <= 1000;o++)
 			{
-				test.WriteLine(o % 21);
+				test.WriteLine(o % 10000);
 			}
-			test.Close();
-			string[] lines = File.ReadAllLines("8.txt");
+			test.Close();*/
+
+			string[] lines = File.ReadAllLines("in.txt");
 			int file_size = Int32.Parse(lines[0]);
             int[] input_array = new int[file_size];
 			int?[] tab = new int?[file_size]; //array used in second method
@@ -95,7 +97,7 @@ namespace ASD1{
 			}
 			StreamWriter output_file = new StreamWriter("out.txt");
 			output_file.WriteLine(result_of_counting);
-			Console.WriteLine(optimal_operations); //gdy dane sa powtarzalne
+			Console.WriteLine("Liczba operacji algorytmu optymalnego: "+optimal_operations); //gdy dane sa powtarzalne
 			//Koniec rozwiazania optymalnego O=k*n gdzie k jest stałą powtarzalności
             //Gorszy sort algorytmow O=cn^2
 			int k = 0;
@@ -133,7 +135,7 @@ namespace ASD1{
 				if (tab[l] != null)
 					counter_of_not_nulls_in_array++;
 			}    
-		    Console.WriteLine(naive_operations);    //gdy dane sa unikatowe       
+			Console.WriteLine("Liczba operacji algorytmu naiwnego: "+naive_operations);    //gdy dane sa unikatowe       
 			output_file.WriteLine(counter_of_not_nulls_in_array);
 			output_file.Close();
         }
