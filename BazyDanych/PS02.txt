@@ -1,0 +1,35 @@
+1. Sprawdź, jakie atrybuty wchodzą w skład następujących tabel: pracownik, departament, poziom_zarobkow.
+
+DESC pracownik
+
+2. Podać nazwiska i pensje każdego pracownika, dane posortować malejąco wg. daty zatrudnienia.
+
+SELECT nazwisko, pensja FROM pracownik ORDER BY data_zatrudnienia DESC
+
+3. Wyznaczyć dla każdego pracownika całkowitą sumę jego zarobków (włącznie z premią). Nadać etykietę.
+
+SELECT id_pracownika, pesja+nvl(premia,0) as zarobki FROM pracownik
+
+4. Przeanalizować wynik następującego zapytania: SELECT nazwisko, nr_przedzialu FROM pracownik, poziom_zarobkow. Sprawdzić jaki stopień wynagrodzenia posiada każdy zatrudniony.
+
+SELECT nazwisko, nr_przedzialu FROM pracownik, poziom zarobkow where pensja between dolnagranica and gorna granica
+
+5. Wyznaczyć listę tych pracowników, których departament mieści się w Gdańsku lub Olsztynie.
+
+
+
+6. Podać nazwiska tych pracowników, którzy nie mają kierowników.
+
+SELECT nazwisko FROM PRACOWNIK WHERE ID_KIEROWNIKA is null
+
+7. Podać listę pracowników, którzy pracują na stanowisku pracy, którego nazwa rozpoczyna się od litery S.
+
+Select * from pracownik where stanowisko like 's%'
+
+
+8. Wyznaczyć listę pracowników, których nazwiska rozpoczynają się od litery J lub M i którzy nie otrzymują premii.
+9. Podać nazwiska i zarobki tych pracowników, których stopień wynagrodzenia jest równy 1 lub 2.
+10. Podać listę pracowników wraz z nazwami projektów, z którymi byli/są związani.
+11. W jakich departamentach prowadzone są prace nad poszczególnymi projektami. Lista powinna zawierać odpowiednio nazwy departamentów i projektów.
+12. Podać listę stanowisk w każdym departamencie. Wyeliminować wartości powtarzające się.
+13. Podać nazwiska osób pracujących na stanowisku ‘Analityk’ z departamentu ‘Departament 2’ .
