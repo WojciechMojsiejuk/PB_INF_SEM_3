@@ -1,0 +1,144 @@
+
+#include <msp430x14x.h>
+
+//Funkcja interwa³u czasowego
+void mydelay()
+{
+  int a=0;
+  for(a=0;a<400;a++)
+  {
+    int b=0;
+    for(b=0;b<400;b++)
+    {
+      _NOP();
+    }
+  }
+}
+
+//Funkcja interwa³u czasowego (modyfikowalna)
+void mydelay2(int delay)
+{
+  int a=0;
+  for(a=0;a<delay;a++)
+  {
+    int b=0;
+    for(b=0;b<delay;b++)
+    {
+      _NOP();
+    }
+  }
+}
+
+/*int main( void )
+{
+  // Stop watchdog timer to prevent time out reset
+  WDTCTL = WDTPW + WDTHOLD;
+  
+  //Ustawienie 1 na pinach, do których pod³¹czone s¹ diody
+  P1DIR |=BIT5+BIT6;
+  P2DIR |=0X02;
+
+  while(1)
+  {
+    //Zapalenie pierwszej diody
+    P1OUT=P1OUT |0x0020;
+    mydelay();
+    //Zapalenie drugiej diody
+    P1OUT=P1OUT |0x0040;
+    mydelay();
+    //Zapalenie trzeciej diody
+    P2OUT = P2OUT &~BIT1;
+    mydelay();
+    //Zgaszenie diody pierwszej i drugiej
+    P1OUT &=0x00;
+    //Zgaszenie diody trzeciej
+    P2OUT |=BIT1;
+    mydelay();
+  }
+  return 0;
+}*/
+
+int main( void )
+{
+  // Stop watchdog timer to prevent time out reset
+  WDTCTL = WDTPW + WDTHOLD;
+  
+  //Ustawienie 1 na pinach, do których pod³¹czone s¹ diody
+  P1DIR |=BIT5+BIT6;
+  P2DIR |=BIT1;
+  
+  //Ustawienie 0 na pinach do przycisków
+  P4DIR &=~BIT4;
+  P4DIR &=~BIT5;
+  P4DIR &=~BIT6;
+  
+  while(1)
+  {
+    //Zgaszenie diody pierwszej
+    if((P4IN & BIT4)!=0)
+    {
+      P1OUT=P1OUT &~BIT5;
+    }
+    //Zapalenie diody pierwszej
+    else
+    {
+      P1OUT |=BIT5;
+    }
+    //Zapalenie diody drugiej
+    if((P4IN & BIT5)!=0)
+    {
+      P1OUT=P1OUT &~BIT6;
+    }
+    //Zgaszenie diody drugiej
+    else
+    {
+      P1OUT |=BIT6;
+    }
+    //Zapalenie diody trzeciej
+    if((P4IN & BIT6)!=0)
+    {
+      P2OUT |= BIT1;
+    }
+    //Zgaszenie diody trzeciej
+    else
+    {
+      P2OUT &=~BIT1;
+    }
+  }
+  return 0;
+}
+
+/*int main( void )
+{
+  // Stop watchdog timer to prevent time out reset
+  WDTCTL = WDTPW + WDTHOLD;
+  
+  //Ustawienie 1 na pinie, do którego pod³¹czona jest dioda
+  P1DIR |=BIT5;
+  
+  //Ustawienie 0 na pinach do przycisków
+  P4DIR &=~BIT4;
+  P4DIR &=~BIT5;
+  
+  int delay=400;
+  
+  while(1)
+  {
+    P1OUT |=BIT5;
+    mydelay2(delay);
+    P1OUT &=~BIT5;
+    mydelay2(delay);
+    //Zwiêkszenie interwa³u
+    if( (P4IN & BIT4) !=0)
+    {
+      delay+=100;
+    }
+    //Zmniejszenie interwa³u
+    if ( (P4IN & BIT5) !=0)
+    {
+      if (delay - 100 >0)
+        delay-=100;
+    }
+  }
+  return 0;
+}*/
