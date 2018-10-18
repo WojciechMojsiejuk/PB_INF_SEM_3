@@ -16,7 +16,7 @@ SELECT nazwisko, nr_przedzialu FROM pracownik, poziom zarobkow where pensja betw
 
 5. Wyznaczyć listę tych pracowników, których departament mieści się w Gdańsku lub Olsztynie.
 
-
+SELECT pracownik.naziwsko FROM pracownik, deparament WHERE pracownik.nr_departamentu = departament.nr_departamentu 
 
 6. Podać nazwiska tych pracowników, którzy nie mają kierowników.
 
