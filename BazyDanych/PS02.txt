@@ -42,3 +42,18 @@ Select nazwisko from pracownik where stanowisko like ('J%' OR 'M%') and premia i
 11. W jakich departamentach prowadzone są prace nad poszczególnymi projektami. Lista powinna zawierać odpowiednio nazwy departamentów i projektów.
 12. Podać listę stanowisk w każdym departamencie. Wyeliminować wartości powtarzające się.
 13. Podać nazwiska osób pracujących na stanowisku ‘Analityk’ z departamentu ‘Departament 2’ .
+
+
+1. DESC Pracownik, Departament, Poziom_zarobkow;
+2. SELECT nazwisko, pensja FROM Pracownik ORDER BY pensja DESC;
+3. SELECT nazwisko, pensja+NVL(premia,0) as "Ca≥kowita suma zarobkůw" FROM Pracownik;
+4. SELECT nazwisko, nr_przedzialu FROM pracownik, poziom_zarobkow WHERE pensja BETWEEN dolna_granica AND gorna_granica;
+5. SELECT nazwisko, lokalizacja FROM Pracownik, Departament WHERE Pracownik.nr_departamentu=Departament.nr_departamentu AND lokalizacja IN ('GdaŮsk','Olsztyn');
+6. SELECT nazwisko FROM Pracownik WHERE id_kierownika is NULL;
+7. SELECT nazwisko, stanowisko FROM Pracownik WHERE stanowisko LIKE 'S%';
+8. SELECT nazwisko, premia FROM Pracownik WHERE (nazwisko LIKE 'J%' OR nazwisko LIKE 'M%') AND premia is NULL;
+9. SELECT nazwisko, pensja FROM Pracownik, Poziom_zarobkow WHERE pensja BETWEEN dolna_granica AND gorna_granica AND (nr_przedzialu=1 OR nr_przedzialu=2);
+10. SELECT nazwisko, nazwa FROM Pracownik, Zlecenie, Projekt WHERE Pracownik.id_pracownika=Zlecenie.id_pracownika AND Zlecenie.nr_projektu=Projekt.nr_projektu;
+11. SELECT DISTINCT Departament.nazwa, Projekt.nazwa FROM Departament, Pracownik, Zlecenie, Projekt WHERE Pracownik.nr_departamentu=Departament.nr_departamentu AND Pracownik.id_pracownika=Zlecenie.id_pracownika AND Zlecenie.nr_projektu=Projekt.nr_projektu ORDER BY Departament.nazwa ASC;
+12. SELECT DISTINCT nazwa, stanowisko FROM Pracownik, Departament WHERE Pracownik.nr_departamentu=Departament.nr_departamentu;
+13. SELECT nazwisko FROM Pracownik, Departament WHERE Pracownik.nr_departamentu=Departament.nr_departamentu AND Departament.nr_departamentu=2 AND stanowisko='ANALITYK';
