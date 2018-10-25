@@ -1,0 +1,33 @@
+--1
+SELECT pensja, DATA_ZATRUDNIENIA, departament.nazwa from PRACOWNIK,DEPARTAMENT where PRACOWNIK.NR_DEPARTAMENTU=DEPARTAMENT.NR_DEPARTAMENTU and nazwisko='&st';
+--2.1
+SELECT pensja, DATA_ZATRUDNIENIA, departament.nazwa from PRACOWNIK,DEPARTAMENT where PRACOWNIK.NR_DEPARTAMENTU=DEPARTAMENT.NR_DEPARTAMENTU and nazwisko=initcap('&st');
+--2.2
+SELECT p.nazwisko pracownik, k.nazwisko kierownik, k.pensja-p.pensja "roznica plac" from pracownik p, pracownik k where p.ID_KIEROWNIKA=k.ID_PRACOWNIKA;
+--3
+SELECT nazwisko, substr(stanowisko,1,1) from pracownik where stanowisko like 'S%' or stanowisko like 'A%';
+--4
+SELECT nazwisko, substr(stanowisko,1,1) from pracownik where stanowisko in ('A','S');
+--5
+SELECT nazwa, lokalizacja from departament where Length(LOKALIZACJA)>=7;
+--6
+Select to_char(sysdate,'Day (DD) Month (MM) YYYY - HH:MI:SS') data from dual; 
+--7
+Select to_char(data_zatrudnienia,'DAY')"Dzień zatrudnienia",to_char(data_zatrudnienia,'Month')"Nazwa miesiąca",to_char(data_zatrudnienia,'MM')"Nr miesiaca" from pracownik; 
+--8
+SELECT GREATEST(nvl(premia,0),0.5*pensja)*0.2"Nowe Zarobki" FROM Pracownik;
+--9
+Select k.nazwisko "kierownik", d.lokalizacja "lokalizacja kierownika" from pracownik p, pracownik k, departament d where p.NR_DEPARTAMENTU=1 AND k.NR_DEPARTAMENTU=d.NR_DEPARTAMENTU AND p.ID_Kierownika=k.ID_PRACOWNIKA;
+--10
+SELECT p.nazwisko, p.pensja "Pensja pracownika", k.pensja "Pensja kierownika" from pracownik p, pracownik k  where p.pensja-k.pensja>0;
+--11
+SELECT p.nazwisko, p.nr_departamentu,k.nr_departamentu pracownik from pracownik p, pracownik k where p.ID_KIEROWNIKA=k.ID_PRACOWNIKA and k.nr_departamentu=p.nr_departamentu;
+--12
+SELECT p.nazwisko pracownik, k.nazwisko kierownik, zp.nr_projektu, zk.nr_projektu from pracownik p, pracownik k, zlecenie zp, zlecenie zk where p.ID_KIEROWNIKA=k.ID_PRACOWNIKA and k.id_pracownika=zk.id_pracownika and p.id_pracownika=zp.id_pracownika and zp.nr_projektu=zk.nr_projektu;
+--13
+SELECT p.nazwisko, p.pensja*1.2 from pracownik p,poziom_zarobkow pz where
+(p.pensja between pz.dolna_granica and pz.gorna_granica) and pz.nr_przedzialu=1;
+SELECT p.nazwisko, p.pensja*1.1 from pracownik p,poziom_zarobkow pz WHERE
+(p.pensja between pz.dolna_granica and pz.gorna_granica) and pz.nr_przedzialu=2;
+SELECT p.nazwisko, p.pensja*1.05 from pracownik p,poziom_zarobkow pz where
+(p.pensja between pz.dolna_granica and pz.gorna_granica) and pz.nr_przedzialu not in(1,2);
