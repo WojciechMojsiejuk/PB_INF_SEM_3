@@ -24,10 +24,14 @@ SELECT p.nazwisko, p.pensja "Pensja pracownika", k.pensja "Pensja kierownika" fr
 SELECT p.nazwisko, p.nr_departamentu,k.nr_departamentu pracownik from pracownik p, pracownik k where p.ID_KIEROWNIKA=k.ID_PRACOWNIKA and k.nr_departamentu=p.nr_departamentu;
 --12
 SELECT p.nazwisko pracownik, k.nazwisko kierownik, zp.nr_projektu, zk.nr_projektu from pracownik p, pracownik k, zlecenie zp, zlecenie zk where p.ID_KIEROWNIKA=k.ID_PRACOWNIKA and k.id_pracownika=zk.id_pracownika and p.id_pracownika=zp.id_pracownika and zp.nr_projektu=zk.nr_projektu;
---13
+--13.1
 SELECT p.nazwisko, p.pensja*1.2 from pracownik p,poziom_zarobkow pz where
 (p.pensja between pz.dolna_granica and pz.gorna_granica) and pz.nr_przedzialu=1;
 SELECT p.nazwisko, p.pensja*1.1 from pracownik p,poziom_zarobkow pz WHERE
 (p.pensja between pz.dolna_granica and pz.gorna_granica) and pz.nr_przedzialu=2;
 SELECT p.nazwisko, p.pensja*1.05 from pracownik p,poziom_zarobkow pz where
 (p.pensja between pz.dolna_granica and pz.gorna_granica) and pz.nr_przedzialu not in(1,2);
+--13.2
+SELECT nazwisko PRACOWNIK, nr_przedzialu,pensja, decode(nr_przedzialu,1,pensja*1.2,2,pensja*1.15,pensja*1.1)Podwyzka
+FROM pracownik, poziom_zarobkow
+WHERE pensja between dolna_granica and gorna_granica;
