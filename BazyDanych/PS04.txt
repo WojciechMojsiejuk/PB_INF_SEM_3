@@ -1,0 +1,50 @@
+--1
+SELECT stanowisko, count(*)"Liczba Pracownikow" from pracownik
+group by stanowisko;
+--2
+SELECT TO_CHAR(data_zatrudnienia,'MONTH')"Miesiąc", count(*) "Liczba Zatrudnionych" FROM pracownik
+GROUP BY  TO_CHAR(data_zatrudnienia,'MONTH')
+ORDER BY count(*);
+--3
+SELECT stanowisko,min(pensja)"Minimalna pensja",max(pensja)"Maksymalna pensja",round(avg(pensja))"Średnia pensja" from pracownik
+group by stanowisko;
+--4.1
+SELECT k.id_pracownika, count(*)"Liczba podwładnych" FROM pracownik p, pracownik k
+WHERE p.id_kierownika=k.id_pracownika
+GROUP BY k.id_pracownika;
+--4.2
+SELECT id_kierownika, count(id_kierownika)"Liczba podwładnych" FROM pracownik 
+WHERE id_kierownika is not null
+GROUP BY id_kierownika;
+--5
+SELECT k.nazwisko, round(avg(p.pensja))"Średnia pensja podwładnych" FROM pracownik p, pracownik k
+WHERE p.id_kierownika=k.id_pracownika
+GROUP BY k.nazwisko, k.id_pracownika;
+--6
+SELECT stanowisko FROM pracownik
+WHERE pensja>1200
+GROUP BY stanowisko
+HAVING count(*)>2;
+--7
+SELECT stanowisko, count(*), AVG(pensja+nvl(premia,0))
+FROM pracownik
+GROUP BY stanowisko
+HAVING avg(pensja+nvl(premia,0))>2000
+ORDER BY AVG(pensja+nvl(premia,0));
+--8.a
+SELECT nr_projektu, SUM(ilosc_godzin*stawka_za_godzine) "SUMA"
+FROM zlecenie
+GROUP BY nr_projektu;
+--8.b
+SELECT p.nazwa, SUM(z.ilosc_godzin*z.stawka_za_godzine) "SUMA"
+FROM zlecenie z, projekt p
+WHERE z.nr_projektu=p.nr_projektu
+GROUP BY p.nr_projektu,p.nazwa;
+--9
+SELECT d.nazwa, count(distinct p.id_pracownika) from pracownik p, Departament d, Zlecenie z
+WHERE p.nr_departamentu = d.nr_departamentu AND p.id_pracownika = z.id_pracownika
+GROUP BY d.nazwa, d.nr_departamentu;
+--10
+SELECT count(id_pracownika) FROM pracownik p, departament d
+WHERE p.nr_departamentu = d.nr_departamentu AND d.nazwa='Bialystok'
+GROUP BY
