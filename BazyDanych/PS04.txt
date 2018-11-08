@@ -41,10 +41,31 @@ FROM zlecenie z, projekt p
 WHERE z.nr_projektu=p.nr_projektu
 GROUP BY p.nr_projektu,p.nazwa;
 --9
-SELECT d.nazwa, count(distinct p.id_pracownika) from pracownik p, Departament d, Zlecenie z
+SELECT d.nazwa, count(distinct p.id_pracownika) from pracownik p, Departament d, Zlecenie z, Projekt pr
 WHERE p.nr_departamentu = d.nr_departamentu AND p.id_pracownika = z.id_pracownika
-GROUP BY d.nazwa, d.nr_departamentu;
+GROUP BY d.nazwa,d.nr_departamentu;
 --10
-SELECT count(id_pracownika) FROM pracownik p, departament d
-WHERE p.nr_departamentu = d.nr_departamentu AND d.nazwa='Bialystok'
-GROUP BY
+SELECT pr.nazwa, count(distinct p.id_pracownika) from pracownik p, Departament d, Zlecenie z, Projekt pr
+WHERE p.nr_departamentu = d.nr_departamentu AND d.lokalizacja='Bialystok' AND p.id_pracownika=z.id_pracownika AND z.nr_projektu=pr.nr_projektu
+GROUP BY pr.nazwa;
+--11
+SELECT d.nazwa "Nazwa Departamentu", pr.nazwa "Nazwa projektu",SUM(z.ilosc_godzin*z.stawka_za_godzine)"Wydatki" FROM pracownik p, Departament d, Zlecenie z, Projekt pr
+WHERE p.nr_departamentu = d.nr_departamentu AND p.id_pracownika = z.id_pracownika AND z.nr_projektu=pr.nr_projektu
+GROUP BY d.nazwa,pr.nazwa;
+--12
+SELECT d.nazwa "Nazwa Departamentu", pr.nazwa "Nazwa projektu",SUM(z.ilosc_godzin*z.stawka_za_godzine)"Wydatki" FROM pracownik p, Departament d, Zlecenie z, Projekt pr
+WHERE p.nr_departamentu = d.nr_departamentu AND p.id_pracownika = z.id_pracownika AND z.nr_projektu=pr.nr_projektu AND p.premia is NULL
+GROUP BY d.nazwa,pr.nazwa;
+--13
+SELECT stanowisko FROM pracownik
+WHERE id_kierownika is not NULL
+GROUP BY stanowisko
+HAVING avg(pensja)>0.5*max(pensja);
+--14
+SELECT pz.nr_przedzialu, count(distinct p.id_pracownika) "Liczba pracownikow" from poziom_zarobkow pz,pracownik p
+WHERE p.pensja between dolna_granica and gorna_granica
+GROUP BY pz.nr_przedzialu;
+--15
+SELECT d.nr_departamentu, count(distinct k.id_pracownika) from pracownik p, pracownik k, departament d
+WHERE p.id_kierownika=k.id_pracownika
+GROUP BY d.nr_departamentu;
