@@ -1,0 +1,59 @@
+--Złączenie naturalne
+--1
+SELECT d.nazwa, count(p.id_pracownika) FROM pracownik p, departament d
+WHERE p.nr_departamentu(+)=d.nr_departamentu
+GROUP BY d.nazwa,d.nr_departamentu;
+--2
+SELECT p.nazwisko, k.id_pracownika, k.nazwisko FROM pracownik p, pracownik k
+WHERE p.id_kierownika = k.id_pracownika(+)
+ORDER BY k.nazwisko, p.nazwisko DESC;
+--3
+select nazwa,
+sum (nvl(ilosc_godzin,0)*nvl(stawka_za_godzine,0)) ile_wydano from projekt, zlecenie
+where projekt.nr_projektu=zlecenie.nr_projektu(+)
+group by nazwa, projekt.nr_projektu;
+--4
+SELECT p.nazwisko, sum (nvl(z.ilosc_godzin,0)*nvl(z.stawka_za_godzine,0))"Zarobki przy projektach"
+FROM pracownik p, zlecenie z, projekt pr
+WHERE p.id_pracownika = z.id_pracownika
+GROUP BY p.nazwisko;
+--5
+SELECT p1.nazwisko, p1.stanowisko FROM pracownik p1
+WHERE p1.stanowisko = 
+(SELECT p2.stanowisko FROM pracownik p2
+WHERE p2.nazwisko = 'Nazwisko3');
+--6
+SELECT p1.nazwisko, p1.pensja FROM pracownik p1
+WHERE p1.pensja>
+(SELECT p2.pensja FROM pracownik p2
+WHERE p2.nazwisko = 'Nazwisko4')
+AND p1.pensja<
+(SELECT p3.pensja FROM pracownik p3
+WHERE p3.nazwisko = 'Nazwisko7');
+--7
+SELECT p.nazwisko, p.id_pracownika FROM pracownik p
+WHERE p.data_zatrudnienia = 
+(SELECT min(data_zatrudnienia) FROM pracownik);
+--8
+SELECT p.nazwisko, p.id_pracownika FROM pracownik p
+WHERE p.data_zatrudnienia >
+(SELECT p2.data_zatrudnienia FROM pracownik p2
+WHERE p2.nazwisko = 'Nazwisko3'
+);
+--9
+SELECT p.nazwisko, p.id_pracownika FROM pracownik p
+WHERE p.nr_departamentu=
+(SELECT p2.nr_departamentu FROM pracownik p2
+WHERE p2.nazwisko = 'Nazwisko3'
+)AND
+p.pensja<(SELECT avg(pensja) FROM pracownik);
+
+--10
+SELECT d.nr_departamentu FROM departament d, pracownik p
+WHERE d.nr_departamentu= p.nr_departamentu 
+GROUP BY d.nr_departamentu
+HAVING COUNT(*)=
+(  SELECT min(count(p1.id_pracownika)) FROM departament d1, pracownik p1
+    WHERE p1.nr_departamentu(+) = d1.nr_departamentu
+    GROUP BY d1.nr_departamentu
+);
