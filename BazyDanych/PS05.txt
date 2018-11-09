@@ -50,9 +50,9 @@ p.pensja<(SELECT avg(pensja) FROM pracownik);
 
 --10
 SELECT d.nr_departamentu FROM departament d, pracownik p
-WHERE d.nr_departamentu= p.nr_departamentu 
+WHERE d.nr_departamentu= p.nr_departamentu(+) 
 GROUP BY d.nr_departamentu
-HAVING COUNT(*)=
+HAVING COUNT(p.id_pracownika)=
 (  SELECT min(count(p1.id_pracownika)) FROM departament d1, pracownik p1
     WHERE p1.nr_departamentu(+) = d1.nr_departamentu
     GROUP BY d1.nr_departamentu
