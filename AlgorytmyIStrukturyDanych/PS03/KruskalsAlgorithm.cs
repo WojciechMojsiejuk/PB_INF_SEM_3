@@ -39,8 +39,6 @@ namespace ASDPS0506ZAD3
                 {
                     krawedzie.Add(new E(i + 1, Int32.Parse(read[j]), Int32.Parse(read[j+1])));
                 }
-                if (counter == E)
-                    break;
             }
             foreach( E krawedz in krawedzie)
             {
@@ -52,6 +50,36 @@ namespace ASDPS0506ZAD3
             {
                 Console.WriteLine("V1:" + krawedz.v1 + " V2: " + krawedz.v2 + " Waga: " + krawedz.w);
             }
+            //By rozpiąć n wierzchołków potrzeba n-1 krawędzi. Dlatego tworzymy tablicę o takim rozmiarze
+            E[] drzewoRozpinajace = new E[V - 1];
+            //tablica pomocnicza sprawdzająca czy krawędzie należą do jednej struktury
+            int[] tab = new int[V];
+            for (int i = 0; i < V; i++)
+            {
+                tab[i] = i + 1;
+            }
+            counter = 0;
+            foreach (E krawedz in sortedList)
+            {
+                if (counter == V - 1)
+                    break;
+                if (tab[krawedz.v1 - 1] != tab[krawedz.v2 - 1])
+                {
+                    tab[krawedz.v1 - 1] = krawedz.v2;
+                    drzewoRozpinajace[counter] = krawedz;
+                    counter++;
+                }
+                else
+                    continue;
+
+            }
+            Console.WriteLine("DrzewoRozpinajace");
+            foreach (E krawedz in drzewoRozpinajace)
+            {
+                Console.WriteLine("V1:" + krawedz.v1 + " V2: " + krawedz.v2 + " Waga: " + krawedz.w);
+            }
+
+
         }
     }
 
