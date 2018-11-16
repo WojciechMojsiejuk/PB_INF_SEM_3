@@ -66,27 +66,29 @@ namespace ASDPS0506ZAD2
                     {
                         S[i, j] = Math.Max(S[i-1, j], S[i - 1, j - przedmioty[i-1].weight] + przedmioty[i-1].value);
                     }
-                    //Do wyswietlania zmian obliczen w debug mode
-                    for (int x = 0; x <= n; x++)
-                    {
-                        for (int y = 0; y <= W; y++)
-                        {
-                            Console.Write(S[x, y] + " ");
-                        }
-                        Console.Write("\n");
-                    }
-
                 }
             }
-            /*
-            int?[,] historiaDróg = new int?[n,2];
-            int indexSporny=0;
-
-            bool znalezionoNoweRozwiązanie = false;
-            int x = W;
-            int y = n;
-            for (int i = n; i>0;i++)
+            //Do wyswietlania zmian obliczen w debug mode
+            int x;
+            int y;
+            for (x = 0; x <= n; x++)
             {
+                for (y = 0; y <= W; y++)
+                {
+                    Console.Write(S[x, y] + " ");
+                }
+                Console.Write("\n");
+            }
+
+            int?[,] historiaDróg = new int?[n,2]; //poza wyborem przedmiotu przechowuje informacje jaki był krok 0 - krok w bok o okresloną wagę, 1 - krok w górę
+            int indexSporny=0; //Zawiera indeks zdarzenia gdzie obie drogi są poprawne
+
+            bool znalezionoNoweRozwiązanie = false;//do sprawdzenia czy w iteracji znaleziono nowe rozwiązanie
+            x = W;
+            y = n;
+            for (int i = n; i>0;i--)
+            {
+                /*
                 if(znalezionoNoweRozwiązanie)
                 {
                     int j;
@@ -115,15 +117,36 @@ namespace ASDPS0506ZAD2
                     //Zaczynamy poszukiwania dalej
                     x = W;
                     y = n;
-                }
+                }*/
+                /*
                 if(S[y-1,x]==S[y-1,x-przedmioty[i].weight])
                 {
+
                     indexSporny = n - i;
                     znalezionoNoweRozwiązanie = true;
+
+                }*/
+                if (S[y, x] == S[y - 1, x])
+                {
+                    historiaDróg[i-1, 0] = null;
+
                 }
+                else
+                {
+                    historiaDróg[i-1, 0] = i;
+                    x = x - przedmioty[i-1].weight;
+                }
+                y--;
 
             }
-            */
+            for (int i = 0; i < n;i++)
+            {
+                if (historiaDróg[i, 0] == null)
+                    continue;
+                else
+                    Console.Write(historiaDróg[i, 0] + " ");
+            }
+
         
         }
     }
