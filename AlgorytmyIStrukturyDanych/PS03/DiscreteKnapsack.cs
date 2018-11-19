@@ -16,6 +16,29 @@ namespace ASDPS0506ZAD2
     }
     class MainClass
     {
+        public static void Paths(int[,]searchingTab, DPP[] przedmioty, int y, int x)
+        {
+
+            if (searchingTab[y-1, x] == 0)
+            {
+                Console.WriteLine(y);
+                return;
+            }
+
+            if (searchingTab[y, x] == searchingTab[y - 1, x])
+            {
+                Paths(searchingTab,przedmioty, y - 1, x);
+            }
+            if (x - przedmioty[y - 1].weight>0)
+            {
+                if (searchingTab[y, x] == searchingTab[y - 1, x - przedmioty[y - 1].weight] + przedmioty[y - 1].value)
+                {
+                    Console.Write(y + " ");
+                    Paths(searchingTab, przedmioty, y - 1, x - przedmioty[y - 1].weight);
+                }
+            }
+
+        }
         public static void Main(string[] args)
         {
             StreamReader reader = new StreamReader("In0302.txt"); //Otwarcie pliku z ktorego pobrane zostana dane
@@ -80,74 +103,9 @@ namespace ASDPS0506ZAD2
                 Console.Write("\n");
             }
 
-            int?[,] historiaDróg = new int?[n,2]; //poza wyborem przedmiotu przechowuje informacje jaki był krok 0 - krok w bok o okresloną wagę, 1 - krok w górę
-            int indexSporny=0; //Zawiera indeks zdarzenia gdzie obie drogi są poprawne
-
-            bool znalezionoNoweRozwiązanie = false;//do sprawdzenia czy w iteracji znaleziono nowe rozwiązanie
-            x = W;
-            y = n;
-            for (int i = n; i>0;i--)
-            {
-                /*
-                if(znalezionoNoweRozwiązanie)
-                {
-                    int j;
-                    for (j = 0; j < indexSporny;j++)
-                    {
-                        if (historiaDróg[j, 1] == 0)
-                            x = x - przedmioty[n - j].weight;
-                        else
-                            x = x--;
-                        y--;
-                    }
-                    if (historiaDróg[j, 1] == 0)
-                    {
-                        x = x--;
-                        historiaDróg[j,0]=
-                    }
-                        
-                    else
-                        x = x - przedmioty[n - j].weight;
-                    y--;
-                    znalezionoNoweRozwiązanie = false;
-
-                }
-                else
-                {
-                    //Zaczynamy poszukiwania dalej
-                    x = W;
-                    y = n;
-                }*/
-                /*
-                if(S[y-1,x]==S[y-1,x-przedmioty[i].weight])
-                {
-
-                    indexSporny = n - i;
-                    znalezionoNoweRozwiązanie = true;
-
-                }*/
-                if (S[y, x] == S[y - 1, x])
-                {
-                    historiaDróg[i-1, 0] = null;
-
-                }
-                else
-                {
-                    historiaDróg[i-1, 0] = i;
-                    x = x - przedmioty[i-1].weight;
-                }
-                y--;
-
-            }
-            for (int i = 0; i < n;i++)
-            {
-                if (historiaDróg[i, 0] == null)
-                    continue;
-                else
-                    Console.Write(historiaDróg[i, 0] + " ");
-            }
-
+            Paths(S, przedmioty, n, W);
         
         }
     }
 }
+
