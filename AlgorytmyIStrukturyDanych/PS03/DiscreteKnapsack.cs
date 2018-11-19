@@ -37,6 +37,11 @@ namespace ASDPS0506ZAD2
                     Paths(searchingTab, przedmioty, y - 1, x - przedmioty[y - 1].weight);
                 }
             }
+            else if(searchingTab[y, x] != searchingTab[y - 1, x])
+            {
+                Console.WriteLine(y);
+                return;
+            }
 
         }
         public static void Main(string[] args)
