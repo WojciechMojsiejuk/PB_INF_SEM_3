@@ -65,6 +65,11 @@ namespace ASDPS0506ZAD3
                     break;
                 if (tab[krawedz.v1 - 1] != tab[krawedz.v2 - 1])
                 {
+                    for (int i = 0; i < tab.Length;i++)
+                    {
+                        if(tab[i]==tab[krawedz.v1-1])
+                            tab[i]= krawedz.v2;
+                    }
                     tab[krawedz.v1 - 1] = krawedz.v2;
                     drzewoRozpinajace[counter] = krawedz;
                     counter++;
