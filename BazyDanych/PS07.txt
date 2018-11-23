@@ -1,0 +1,67 @@
+--1. Wybrać nazwiska osób pod warunkiem, że istnieją też inne osoby zarabiające tyle, co dana osoba.
+SELECT nazwisko from pracownik p
+WHERE EXISTS(SELECT 1 FROM pracownik p1 WHERE p1.pensja = p.pensja and p1.id_pracownika!=p.id_pracownika);
+--2. Wypisać nazwiska oraz pensje tych osób, które nie mają podwładnych.
+SELECT nazwisko, pensja from pracownik p
+WHERE NOT EXISTS(SELECT 1 FROM pracownik p1 WHERE p.id_pracownika=p1.id_kierownika);
+--3. Wypisać nazwiska osób, które pracowały nad dwoma projektami.
+SELECT nazwisko from pracownik 
+WHERE id_pracownika in
+(SELECT id_pracownika FROM  zlecenie
+GROUP BY id_pracownika
+HAVING count(id_pracownika)>=2);
+--4. Wypisać te poziomy zarobków, w skład których wchodzą pensje co najmniej 2 osób, przy
+--założeniu, że przynajmniej jedna z tych osób pracowała nad dwoma projektami.
+SELECT nr_przedzialu 
+FROM poziom_zarobkow pz, pracownik p
+WHERE p.pensja between pz.dolna_granica and pz.gorna_granica and exists
+(SELECT 1 FROM  pracownik p1, zlecenie z1
+WHERE p1.id_pracownika=z1.id_pracownika
+AND p1.pensja between pz.dolna_granica and pz.gorna_granica 
+GROUP BY p1.id_pracownika
+HAVING count(p1.id_pracownika)>=2)
+GROUP BY nr_przedzialu
+HAVING count(*)>=2;
+--5. Podać numery projektów, na których pracują osoby będące na różnych stanowiskach.
+SELECT z.nr_projektu FROM zlecenie z, pracownik p
+WHERE z.id_pracownika = p.id_pracownika
+GROUP BY nr_projektu
+HAVING Count(distinct stanowisko) = Count(stanowisko);
+--6. Wypisać nazwy projektów, nazwiska ludzi, którzy nad nim pracowali, pod warunkiem, że
+--każdy pracownik nad nim pracujący jest na innym stanowisku.
+SELECT pr.nazwa, p.nazwisko FROM pracownik p, projekt pr, zlecenie z
+WHERE p.id_pracownika = z.id_pracownika and z.nr_projektu=pr.nr_projektu and z.nr_projektu = any(
+SELECT z.nr_projektu FROM zlecenie z, pracownik p
+WHERE z.id_pracownika = p.id_pracownika
+GROUP BY nr_projektu
+HAVING Count(distinct stanowisko) = Count(stanowisko)
+);
+--7. Podać numer departamentu, na którym pracuje osoba pracująca przy realizacji dwóch
+--projektów.
+SELECT nr_departamentu
+FROM pracownik p
+WHERE p.id_pracownika in 
+(SELECT id_pracownika FROM zlecenie Group BY id_pracownika HAVING count(id_pracownika)=2);
+--8. Wypisać nazwy departamentów, w których pracuje najwięcej ludzi i pracuje co najmniej
+--jeden pracownik, który był zatrudniony przy realizacji dokładnie jednego projektu. Podać
+--nazwiska tych pracowników.
+--wypisujemy nazwiska, wiec nie mozemy pogrupowac po departamentach w zewnetrznym, tylko w wewnetrznym
+--9. Wypisać nazwy departamentów, w których pracuje najwięcej Sprzedawców. Wypisać
+--nazwę departamentu, minimalną, maksymalną i średnią pensję w tych departamentach.
+--10. Wypisać nazwiska pracowników i ich kierowników (jeśli takowych posiadają), pod
+--warunkiem, że podwładny pracował przy realizacji najwcześniejszego projektu, pracował najwięcej godzin przy najwcześniejszym projekcie a jego kierownik nie pracował przy żadnym projektem.
+--11. Znaleźć nazwę departamentu, w którym pracuje najwięcej ludzi a wśród tych ludzi jest człowiek zarabiający najwięcej w całej firmie.
+--12. Wypisać nazwiska osób zarabiających więcej niż co najmniej jeden kierownik.
+--13. Dla każdego departamentu (nazwa) wypisać stanowiska najliczniej obsadzone.
+--14. Wypisać nazwę departamentu, średnią pensję podwładnych, średnią pensję kierowników
+--(pracujących w tym departamencie), pod warunkiem, że w departamencie tym pracuje
+--najwięcej podwładnych.
+--15. Wypisać nazwiska kierowników oraz nazwy departamentów, w których pracują, pod
+--warunkiem, że dany kierownik ma najwięcej podwładnych, którzy kiedykolwiek pracowali (lub pracują) przy realizacji jakiegoś projektu. Przykład: kierownik A ma 20 podwładnych, z których 5 pracowało nad projektem, kierownik B ma 6 podwładnych, z których każdy pracował przy realizacji projektu. Powinno zostać wypisane nazwisko B.
+--16. Wypisać daty zatrudnienia oraz pensje ludzi, którzy pracowali (lub pracują) przy realizacji ostatniego projektu, pod warunkiem, że zatrudnieni są w najmniej licznym departamencie.
+--17. Wypisać nazwę oraz lokalizację departamentu, w którym pracuje najwięcej kierowników.
+--18. Wypisać nazwiska, pensje i stanowisko ludzi, których zarobki są unikatowe (nie ma drugiej
+--osoby zarabiającej tyle samo) a stanowisko jest takim, na którym średnia pensja nie jest
+--najwyższą średnią.
+--19. Wypisać nazwę projektu, nad którym pracowało najwięcej ludzi oraz nazwiska tych ludzi,
+--pod warunkiem, że spędzili oni najwięcej (najmniej) godzin nad realizacją projektu a ich pensja jest niższa od średniej pensji w firmie.
