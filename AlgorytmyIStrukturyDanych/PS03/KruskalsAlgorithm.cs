@@ -23,6 +23,7 @@ namespace ASDPS0506ZAD3
         public static void Main(string[] args)
         {
             StreamReader reader = new StreamReader("In0303.txt"); //Otwarcie pliku z ktorego pobrane zostana dane
+            StreamWriter writer = new StreamWriter("Out0303.txt"); //Otwarcie pliku z ktorego pobrane zostana dane
             string[] zalozenia = reader.ReadLine().Split(' '); //Wczytanie pierwszej linii z pliku
             int V = Int32.Parse(zalozenia[0]);//Ilość wierzchołków
             int E = Int32.Parse(zalozenia[1]);//Ilość krawędzi
@@ -30,6 +31,7 @@ namespace ASDPS0506ZAD3
             string[] read = new string[2*V]; //Zmienna pomocnicza do rozróżniania v2 i w
             var krawedzie = new List<E>();
             int counter = 0;//licznik do wczytania E krawedzi
+            int sumawag = 0;
             for (int i = 0; i < V; i++)
             {
 
@@ -72,6 +74,7 @@ namespace ASDPS0506ZAD3
                     }
                     tab[krawedz.v1 - 1] = krawedz.v2;
                     drzewoRozpinajace[counter] = krawedz;
+                    sumawag+=krawedz.w;
                     counter++;
                 }
                 else
@@ -79,11 +82,14 @@ namespace ASDPS0506ZAD3
 
             }
             Console.WriteLine("DrzewoRozpinajace");
+            writer.WriteLine(sumawag);
             foreach (E krawedz in drzewoRozpinajace)
             {
                 Console.WriteLine("V1:" + krawedz.v1 + " V2: " + krawedz.v2 + " Waga: " + krawedz.w);
+                writer.Write(krawedz.v1 + " " + krawedz.v2 + "[" + krawedz.w + "], ");
             }
-
+            reader.Close();
+            writer.Close();
 
         }
     }
