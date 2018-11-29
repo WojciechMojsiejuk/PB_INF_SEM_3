@@ -45,11 +45,66 @@ WHERE p.id_pracownika in
 --8. Wypisać nazwy departamentów, w których pracuje najwięcej ludzi i pracuje co najmniej
 --jeden pracownik, który był zatrudniony przy realizacji dokładnie jednego projektu. Podać
 --nazwiska tych pracowników.
+
 --wypisujemy nazwiska, wiec nie mozemy pogrupowac po departamentach w zewnetrznym, tylko w wewnetrznym
+SELECT d.nazwa, p.nazwisko FROM departament d, pracownik p
+WHERE d.nr_departamentu = p.nr_departamentu
+AND EXISTS
+(SELECT p1.id_pracownika FROM pracownik p1, zlecenie z
+WHERE  p1.nr_departamentu=d.nr_departamentu
+AND p1.id_pracownika=z.id_pracownika
+GROUP BY p1.id_pracownika
+HAVING count(p1.id_pracownika)=1)
+AND EXISTS
+(SELECT 1 FROM pracownik p2
+WHERE p2.nr_departamentu=d.nr_departamentu
+GROUP BY d.nazwa, d.nr_departamentu
+HAVING count(p.id_pracownika)=(
+SELECT max(count(p1.id_pracownika)) FROM pracownik p1, departament d1
+WHERE d1.nr_departamentu = p1.nr_departamentu
+GROUP BY d1.nazwa, d1.nr_departamentu));
+---------------------------
+WITH your_feet in the_air and your head on the ground
+BEGIN this_trick AND spin_it --yeeeah
+EXCEPTION Collapse WHERE head='yours' and head is null
+SELECT ? WHERE mind is 'my';
 --9. Wypisać nazwy departamentów, w których pracuje najwięcej Sprzedawców. Wypisać
 --nazwę departamentu, minimalną, maksymalną i średnią pensję w tych departamentach.
+SELECT d.nazwa, min(p.pensja), max(p.pensja), avg(p.pensja) FROM pracownik p, departament d
+WHERE d.nr_departamentu = p.nr_departamentu
+AND d.nr_departamentu in
+(SELECT d1.nr_departamentu FROM departament d1, pracownik p1
+WHERE p1.nr_departamentu=d1.nr_departamentu
+AND upper(p1.stanowisko)=upper('Sprzedawca')
+GROUP BY d1.nr_departamentu
+HAVING count(p1.id_pracownika)=
+(SELECT max(count(p2.id_pracownika)) FROM pracownik p2, departament d2
+WHERE p2.nr_departamentu=d2.nr_departamentu
+AND upper(p2.stanowisko)=upper('Sprzedawca')
+GROUP BY d2.nr_departamentu))
+GROUP BY d.nazwa,d.nr_departamentu;
 --10. Wypisać nazwiska pracowników i ich kierowników (jeśli takowych posiadają), pod
 --warunkiem, że podwładny pracował przy realizacji najwcześniejszego projektu, pracował najwięcej godzin przy najwcześniejszym projekcie a jego kierownik nie pracował przy żadnym projektem.
+SELECT p.nazwisko "Nazwisko pracownika", nvl(k.nazwisko,'brak kierownika') "Nazwisko kierownika" FROM pracownik p, pracownik k
+WHERE p.id_kierownika = k.id_pracownika(+)
+AND p.id_pracownika in
+(SELECT distinct z.id_pracownika FROM zlecenie z
+--WHERE z.id_pracownika = p.id_pracownika
+WHERE z.data_rozpoczecia<=ANY
+(SELECT min(data_rozpoczecia) FROM  zlecenie
+GROUP BY nr_projektu)
+AND z.ilosc_godzin=
+(
+SELECT max(z1.ilosc_godzin)
+FROM zlecenie z1
+WHERE z1.nr_projektu=z.nr_projektu
+GROUP BY z1.nr_projektu
+)
+)
+AND
+NOT EXISTS(SELECT 1 FROM zlecenie z2
+WHERE z2.id_pracownika=k.id_pracownika);
+
 --11. Znaleźć nazwę departamentu, w którym pracuje najwięcej ludzi a wśród tych ludzi jest człowiek zarabiający najwięcej w całej firmie.
 --12. Wypisać nazwiska osób zarabiających więcej niż co najmniej jeden kierownik.
 --13. Dla każdego departamentu (nazwa) wypisać stanowiska najliczniej obsadzone.
