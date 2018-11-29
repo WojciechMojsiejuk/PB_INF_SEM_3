@@ -106,7 +106,19 @@ NOT EXISTS(SELECT 1 FROM zlecenie z2
 WHERE z2.id_pracownika=k.id_pracownika);
 
 --11. Znaleźć nazwę departamentu, w którym pracuje najwięcej ludzi a wśród tych ludzi jest człowiek zarabiający najwięcej w całej firmie.
+SELECT d.nazwa FROM departament d, pracownik p
+WHERE d.nr_departamentu=p.nr_departamentu
+AND EXISTS(SELECT 1 FROM pracownik p2
+WHERE p2.nr_departamentu=d.nr_departamentu
+AND p2.pensja=(SELECT max(pensja) FROM pracownik))
+GROUP BY d.nazwa, d.nr_departamentu
+HAVING Count(p.id_pracownika)=
+(SELECT max(count(p1.id_pracownika)) FROM pracownik p1, departament d1
+WHERE p1.nr_departamentu=d1.nr_departamentu
+GROUP BY d1.nazwa);
+;
 --12. Wypisać nazwiska osób zarabiających więcej niż co najmniej jeden kierownik.
+SELECT 
 --13. Dla każdego departamentu (nazwa) wypisać stanowiska najliczniej obsadzone.
 --14. Wypisać nazwę departamentu, średnią pensję podwładnych, średnią pensję kierowników
 --(pracujących w tym departamencie), pod warunkiem, że w departamencie tym pracuje
