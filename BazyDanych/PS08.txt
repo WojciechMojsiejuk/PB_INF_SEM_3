@@ -1,0 +1,42 @@
+--1. Dla każdego pracownika wypisać różnicę między jego pensją a średnią pensją w firmie.
+SELECT id_pracownika, ABS(ROUND(pensja - (SELECT nvl(avg(pensja),0) FROM pracownik),2)) FROM pracownik;
+--2. Dla każdego pracownika wypisać pensję oraz minimalną, maksymalną i średnią pensję w
+--departamencie, w którym pracuje.
+SELECT p.id_pracownika, p.pensja, 
+(SELECT min(p1.pensja) FROM pracownik p1
+WHERE p1.nr_departamentu = d.nr_departamentu)"Minimum",
+(SELECT max(p1.pensja) FROM pracownik p1
+WHERE p1.nr_departamentu = d.nr_departamentu)"Maksimum",
+(SELECT avg(p1.pensja) FROM pracownik p1
+WHERE p1.nr_departamentu = d.nr_departamentu)"Srednia"
+FROM pracownik p, departament d
+WHERE p.nr_departamentu = d.nr_departamentu;
+--ALTERNATYWNE ROZWIĄZANIE
+SELECT p.nazwisko, p.pensja, A.srednia,A.minim,A.maksimum
+FROM pracownik p, (SELECT nr_departamentu,avg(pensja)srednia,min(pensja)minim,max(pensja)maksimum FROM pracownik group by nr_departamentu)A
+WHERE p.nr_departamentu=A.nr_departamentu;
+--3. Dla każdego departamentu (nazwa) wypisać procent pracowników w nim pracujących.
+select nazwa, round(((select nvl(count(id_pracownika),0) from pracownik where nr_departamentu=d.nr_departamentu)/(select count(id_pracownika)from pracownik)),4)*100"Procent" from departament d;
+--4. Dla każdego projektu podać jakie stanowisko w jakim procencie jest reprezentowane.
+--Podać informacje tylko o tych projektach, przy których pracują tylko osoby nie będące
+--kierownikami.
+SELECT tabela2.nazwa,tabela1.stanowisko, round((tabela1.x/tabela2.y)*100,2)procent
+FROM (SELECT pracownik.stanowisko, count(pracownik.id_pracownika)x, projekt.nr_projektu
+    from pracownik,zlecenie,projekt
+    where pracownik.id_pracownika=zlecenie.id_pracownika and zlecenie.nr_projektu=projekt.nr_projektu
+    group by pracownik.stanowisko, projekt.nr_projektu)tabela1,
+    (select projekt.nr_projektu, projekt.nazwa, count(zlecenie.id_pracownika)y
+    from zlecenie,projekt
+    where zlecenie.nr_projektu=projekt.nr_projektu
+    group by projekt.nr_projektu,projekt.nazwa)tabela2
+    where tabela1.nr_projektu = tabela2.nr_projektu
+    and tabela1.nr_projektu not in (SELECT nr_projektu FROM zlecenie WHERE id_pracownika in(SELECT id_kierownika FROM pracownik WHERE id_kierownika is not null));
+--5. Podać informacje o tych departamentach, w których pracują osoby reprezentujące
+--wszystkie możliwe stanowiska i osoba, która została zatrudniona w firmie jako druga.
+--Podać numer departamentu, liczbę osób, pracujących na stanowiskach innych niż Informatyk.
+SELECT d.nr_departamentu FROM pracownik p, departament d
+GROUP BY d.nr_departamentu
+HAVING Count(distinct p.stanowisko) = Count(p.stanowisko);
+
+
+--6. Podać nazwy stanowisk, na których pracują tylko pracownicy zarabiający powyżej średniej pensji w firmie. Dodatkowo wypisać liczbę osób pracujących nad projektami oraz liczbę osób pracujących w tym samym departamencie co Prezes.
