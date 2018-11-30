@@ -34,9 +34,12 @@ FROM (SELECT pracownik.stanowisko, count(pracownik.id_pracownika)x, projekt.nr_p
 --5. Podać informacje o tych departamentach, w których pracują osoby reprezentujące
 --wszystkie możliwe stanowiska i osoba, która została zatrudniona w firmie jako druga.
 --Podać numer departamentu, liczbę osób, pracujących na stanowiskach innych niż Informatyk.
-SELECT d.nr_departamentu FROM pracownik p, departament d
-GROUP BY d.nr_departamentu
-HAVING Count(distinct p.stanowisko) = Count(p.stanowisko);
-
+SELECT d.nazwa, d.nr_departamentu,(SELECT count(*) FROM pracownik WHERE stanowisko !='INFORMATYK' AND nr_departamentu=d.nr_departamentu)liczba
+FROM departament d, pracownik p
+WHERE p.nr_departamentu=d.nr_departamentu and
+d.nr_departamentu=any(SELECT nr_departamentu FROM pracownik WHERE data_zatrudnienia=(SELECT min(data_zatrudnienia) FROM pracownik where data_zatrudnienia>
+(SELECT min(data_zatrudnienia) FROM pracownik)))
+GROUP BY d.nazwa, d.nr_departamentu
+HAVING  count(distinct p.stanowisko)=(SELECT count(Distinct stanowisko) FROM pracownik);
 
 --6. Podać nazwy stanowisk, na których pracują tylko pracownicy zarabiający powyżej średniej pensji w firmie. Dodatkowo wypisać liczbę osób pracujących nad projektami oraz liczbę osób pracujących w tym samym departamencie co Prezes.
