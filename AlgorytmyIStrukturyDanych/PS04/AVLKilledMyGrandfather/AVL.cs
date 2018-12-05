@@ -32,41 +32,34 @@ namespace ASD0901ZAD1
     class SlownikAVL
     {
 
-        public void RotacjaLL(Wezel root)
+        public void RotacjaLL(ref Wezel root)
         {
             //zmiana pozycji
             Wezel A = root;
             root = A.prawy;
             Wezel II = root.lewy;
             root.lewy = A;
-            A.prawy = II;
-            //ustawianie nowych wag
-            root.waga = 0;
-            A.waga = 0;
+            root.lewy.prawy = II;
         }
 
-        public void RotacjaRL(Wezel root)
+        public void RotacjaRL(ref Wezel root)
         {
             throw new NotImplementedException();
         }
 
-        public void RotacjaLR(Wezel root)
+        public void RotacjaLR(ref Wezel root)
         {
             throw new NotImplementedException();
         }
 
-        public void RotacjaRR(Wezel root)
+        public void RotacjaRR(ref Wezel root)
         {
             //zmiana pozycji
             Wezel A = root;
             root = A.lewy;
             Wezel II = root.prawy;
             root.prawy = A;
-            A.lewy = II;
-            //ustawianie nowych wag
-            root.waga = 0;
-            A.waga = 0;
-
+            root.prawy.lewy = II;
         }
 
         public void Wypisz(Wezel root)
@@ -82,7 +75,7 @@ namespace ASD0901ZAD1
     }
     class SlownikPolskiAVL : SlownikAVL
     {
-        public WezelPolski WstawSlowo(WezelPolski root, string slowoPolskie)
+        public WezelPolski WstawSlowo(ref WezelPolski root, string slowoPolskie)
         {
             if (root == null) //gdy dotrze do końca drzewa, tworzy nowy element
             {
@@ -94,12 +87,14 @@ namespace ASD0901ZAD1
             }
             else if (string.Compare(slowoPolskie, root.slowo) < 0)
             {
-                root.lewy = WstawSlowo((WezelPolski)root.lewy, slowoPolskie);
+                WezelPolski lewy = (WezelPolski)root.lewy;
+                root.lewy = WstawSlowo(ref lewy, slowoPolskie);
                 root.waga++;
             }
             else if (string.Compare(slowoPolskie, root.slowo) > 0)
             {
-                root.prawy = WstawSlowo((WezelPolski)root.prawy, slowoPolskie);
+                WezelPolski prawy = (WezelPolski)root.prawy;
+                root.prawy = WstawSlowo(ref prawy, slowoPolskie);
                 root.waga--;
             }
             else
@@ -111,20 +106,92 @@ namespace ASD0901ZAD1
                 //w jaki sposób można przerwać rekurencje?
                 throw new NotImplementedException();
             */
-            if (root.waga >= 2)
+            if (root.waga == 2)
             {
                 if (root.lewy.waga == 1)
-                    RotacjaRR(ref root);
+                {
+                    Wezel wezel = root;
+                    RotacjaRR(ref wezel);
+                    root = (WezelPolski)wezel;
+                    //ustawianie nowych wag
+                    root.waga = 0;
+                    root.prawy.waga = 0;
+                }
                 else
-                    RotacjaLR(ref root);
+                {
+                    Wezel C = root.lewy.prawy;
+                    Wezel wezel = root.lewy;
+                    RotacjaLL(ref wezel);
+                    root.lewy = (WezelPolski)wezel;
+                    wezel = root;
+                    RotacjaRR(ref wezel);
+                    root = (WezelPolski)wezel;
+                    //ustawianie nowych wag
+                    root.waga = 0;
+                    switch (C.waga)
+                    {
+                        case (1):
+
+                            root.prawy.waga = 0;
+                            root.lewy.waga = -1;
+                            break;
+                        case (0):
+
+                            root.prawy.waga = 0;
+                            root.lewy.waga = 0;
+                            break;
+                        case (-1):
+                            root.prawy.waga = 0;
+                            root.lewy.waga = 1;
+                            break;
+
+                    }
+                }
             }
-            if (root.waga <= -2)
+            if (root.waga == -2)
             {
 
                 if (root.prawy.waga == 1)
-                    RotacjaRL(ref root);
+                {
+                    Wezel C = root.prawy.lewy;
+                    Wezel wezel = root.prawy;
+                    RotacjaRR(ref wezel);
+                    root.prawy = (WezelPolski)wezel;
+                    wezel = root;
+                    RotacjaLL(ref wezel);
+                    root = (WezelPolski)wezel;
+                    //ustawianie nowych wag
+                    root.waga = 0;
+                    switch (C.waga)
+                    {
+                        case (1):
+
+                            root.prawy.waga = 0;
+                            root.lewy.waga = -1;
+                            break;
+                        case (0):
+
+                            root.prawy.waga = 0;
+                            root.lewy.waga = 0;
+                            break;
+                        case (-1):
+                            root.prawy.waga = 0;
+                            root.lewy.waga = 1;
+                            break;
+
+                    }
+
+                }
                 else
-                    RotacjaLL(ref root);
+                {
+                    Wezel wezel = root;
+                    RotacjaLL(ref wezel);
+                    root = (WezelPolski)wezel;
+                    //ustawianie nowych wag
+                    root.waga = 0;
+                    root.prawy.waga = 0;
+                }
+
             }
             return root;
         }
@@ -163,16 +230,16 @@ namespace ASD0901ZAD1
 
             SlownikPolskiAVL bst = new SlownikPolskiAVL();
 
-            root = bst.WstawSlowo(root, "Anna");
-            root = bst.WstawSlowo(root, "Balbina");
-            root = bst.WstawSlowo(root, "Czeslaw");
-            root = bst.WstawSlowo(root, "Darek");
-            root = bst.WstawSlowo(root, "Eugeniusz");
-            root = bst.WstawSlowo(root, "Filip");
-            root = bst.WstawSlowo(root, "Kasia");
-            root = bst.WstawSlowo(root, "Jan");
-            root = bst.WstawSlowo(root, "Ludmila");
-            root = bst.WstawSlowo(root, "Adam");
+            bst.WstawSlowo(ref root, "Anna");
+            bst.WstawSlowo(ref root, "Balbina");
+            bst.WstawSlowo(ref root, "Czeslaw");
+            bst.WstawSlowo(ref root, "Darek");
+            bst.WstawSlowo(ref root, "Eugeniusz");
+            bst.WstawSlowo(ref root, "Filip");
+            bst.WstawSlowo(ref root, "Kasia");
+            bst.WstawSlowo(ref root, "Jan");
+            bst.WstawSlowo(ref root, "Ludmila");
+            bst.WstawSlowo(ref root, "Adam");
 
 
             /*int SIZE = 2000000;
