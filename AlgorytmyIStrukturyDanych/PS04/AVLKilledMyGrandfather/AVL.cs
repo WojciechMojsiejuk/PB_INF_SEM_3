@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 namespace ASD0901ZAD1
 {
@@ -17,89 +18,184 @@ namespace ASD0901ZAD1
     class WezelPolski:Wezel
     {
        public WezelAngielski tlumaczeniePolAng;
+       
     }
     class WezelAngielski:Wezel
     {
         public WezelPolski tlumaczenieAngPol;
+
     }
-    class AVLExceltion:Exception
+    class AVLException:Exception
     {
-       public AVLExceltion(string message) : base(message) { }
+       public AVLException(string message) : base(message) { }
     }
-    class SlownikPolskiAVL
+    class SlownikAVL
     {
-        public WezelPolski WstawSlowo(WezelPolski root, string slowoPolskie)
+
+        public void RotacjaLL(ref Wezel root)
         {
-            if (root == null) //gdy drzewo jeszcze nie jest utworzone
+            //zmiana pozycji
+            Wezel A = root;
+            root = A.prawy;
+            Wezel II = root.lewy;
+            root.lewy = A;
+            root.lewy.prawy = II;
+        }
+
+        public void RotacjaRL(ref Wezel root)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RotacjaLR(ref Wezel root)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RotacjaRR(ref Wezel root)
+        {
+            //zmiana pozycji
+            Wezel A = root;
+            root = A.lewy;
+            Wezel II = root.prawy;
+            root.prawy = A;
+            root.prawy.lewy = II;
+        }
+
+        public void Wypisz(Wezel root)
+        {
+            if (root == null)
+            {
+                throw new NotImplementedException();
+            }
+
+            Wypisz(root.lewy);
+            Wypisz(root.prawy);
+        }
+    }
+    class SlownikPolskiAVL:SlownikAVL
+    {
+        public WezelPolski WstawSlowo(ref WezelPolski root, string slowoPolskie)
+        {
+            if (root == null) //gdy dotrze do końca drzewa, tworzy nowy element
             {
                 root = new WezelPolski
                 {
                     slowo = slowoPolskie
                 };
+
             }
             else if (string.Compare(slowoPolskie, root.slowo)<0)
             {
-                root.lewy = WstawSlowo((WezelPolski)root.lewy, slowoPolskie);
+                WezelPolski lewy = (WezelPolski)root.lewy;
+                root.lewy=WstawSlowo(ref lewy, slowoPolskie);
                 root.waga++;
             }
             else if (string.Compare(slowoPolskie, root.slowo) > 0)
             {
-                root.prawy = WstawSlowo((WezelPolski)root.prawy, slowoPolskie);
+                WezelPolski prawy = (WezelPolski)root.prawy;
+                root.prawy = WstawSlowo(ref prawy, slowoPolskie);
                 root.waga--;
             }
             else
             {
-                throw new AVLExceltion("Slowo znajduje sie juz w zbiorze, synonimy sa niedopuszczalne");
+                throw new AVLException("Slowo znajduje sie juz w zbiorze, synonimy sa niedopuszczalne");
             }
             //sprawdzanie wag
-            if(root.waga>=2)
+            /*if (root.waga == 0)
+                //w jaki sposób można przerwać rekurencje?
+                throw new NotImplementedException();
+            */
+            if (root.waga==2)
             {
                 if (root.lewy.waga == 1)
-                    RotacjaRR();
+                {
+                    Wezel wezel = root;
+                    RotacjaRR(ref wezel);
+                    root = (WezelPolski)wezel;
+                    //ustawianie nowych wag
+                    root.waga = 0;
+                    root.prawy.waga = 0;
+                }
                 else
-                    RotacjaLR();
+                {
+                    Wezel C = root.lewy.prawy;
+                    Wezel wezel = root.lewy;
+                    RotacjaLL(ref wezel);
+                    root.lewy = (WezelPolski)wezel;
+                    wezel = root;
+                    RotacjaRR(ref wezel);
+                    root = (WezelPolski)wezel;
+                    //ustawianie nowych wag
+                    root.waga = 0;
+                    switch (C.waga)
+                    {
+                        case (1):
+
+                            root.prawy.waga = 0;
+                            root.lewy.waga = -1;
+                            break;
+                        case (0):
+
+                            root.prawy.waga = 0;
+                            root.lewy.waga = 0;
+                            break;
+                        case (-1):
+                            root.prawy.waga = 0;
+                            root.lewy.waga = 1;
+                            break;
+
+                    }
+                }
             }
-            if(root.waga<=-2)
+            if(root.waga==-2)
             {
 
                 if (root.prawy.waga == 1)
-                    RotacjaRL();
+                {
+                    Wezel C = root.prawy.lewy;
+                    Wezel wezel = root.prawy;
+                    RotacjaRR(ref wezel);
+                    root.prawy = (WezelPolski)wezel;
+                    wezel = root;
+                    RotacjaLL(ref wezel);
+                    root = (WezelPolski)wezel;
+                    //ustawianie nowych wag
+                    root.waga = 0;
+                    switch (C.waga)
+                    {
+                        case(1):
+
+                            root.prawy.waga = 0;
+                            root.lewy.waga = -1;
+                            break;
+                        case(0):
+
+                            root.prawy.waga = 0;
+                            root.lewy.waga = 0;
+                            break;
+                        case(-1):
+                            root.prawy.waga = 0;
+                            root.lewy.waga = 1;
+                            break;
+
+                    }
+
+                }
                 else
-                    RotacjaLL();
+                {
+                    Wezel wezel = root;
+                    RotacjaLL(ref wezel);
+                    root = (WezelPolski)wezel;
+                    //ustawianie nowych wag
+                    root.waga = 0;
+                    root.prawy.waga = 0;
+                }
+                    
             }
             return root;
         }
-
-        private void RotacjaLL()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void RotacjaRL()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void RotacjaLR()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void RotacjaRR()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void traverse(WezelPolski root)
-        {
-            if (root == null)
-            {
-                return;
-            }
-
-            traverse((WezelPolski)root.lewy);
-            traverse((WezelPolski)root.prawy);
-        }
+       
     }
     class IOManager
     {
@@ -114,12 +210,12 @@ namespace ASD0901ZAD1
                 //parzyste - angielskie
                 if (i % 2 == 0)
                 {
-                    a.WstawSlowo(new WezelAngielski(substrings[i]));
+               //    a.WstawSlowo(new WezelAngielski(substrings[i]));
                 }
                 //polskie
                 else
                 {
-                    p.WstawSlowo(new WezelPolski(substrings[i]));
+                 //   p.WstawSlowo(new WezelPolski(substrings[i]));
                 }
             }
             sr.Close();
@@ -133,10 +229,18 @@ namespace ASD0901ZAD1
             WezelPolski root = null;
 
             SlownikPolskiAVL bst = new SlownikPolskiAVL();
-            root = bst.WstawSlowo(root, "Kasia");
-            root =bst.WstawSlowo(root, "Jan");
-            root = bst.WstawSlowo(root, "Ludmila");
-            root = bst.WstawSlowo(root, "Adam");
+
+            bst.WstawSlowo(ref root, "Anna");
+            bst.WstawSlowo(ref root, "Balbina");
+            bst.WstawSlowo(ref root, "Czeslaw");
+            bst.WstawSlowo(ref root, "Darek");
+            bst.WstawSlowo(ref root, "Eugeniusz");
+            bst.WstawSlowo(ref root, "Filip");
+            bst.WstawSlowo(ref root, "Kasia");
+            bst.WstawSlowo(ref root, "Jan");
+            bst.WstawSlowo(ref root, "Ludmila");
+            bst.WstawSlowo(ref root, "Adam");
+
 
             /*int SIZE = 2000000;
             int[] a = new int[SIZE];
