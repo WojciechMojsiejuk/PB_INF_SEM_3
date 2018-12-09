@@ -1,0 +1,66 @@
+--1.Wypisać sumę zarobków ludzi będących w tym samym departamencie, pod warunkiem, że w tym departamencie pracuje przynajmniej jeden człowiek,
+--którego zarobki są na najwyższym poziomie i nie jest on kierownikiem (nie ma podwładnych).
+SELECT sum(p.pensja+nvl(p.premia,0)) from pracownik p, departament d, poziom_zarobkow pz
+WHERE p.nr_departamentu = d.nr_departamentu 
+AND p.pensja +nvl(p.premia,0) between pz.dolna_granica and pz.gorna_granica 
+and pz.nr_przedzialu = (SELECT max(nr_przedzialu) FROM poziom_zarobkow)
+and p.id_pracownika not in (SELECT id_kierownika from pracownik)
+GROUP BY p.nr_departamentu;
+
+--2.Dla każdego stanowiska podać nazwę departamentu, w którym pracuje najwięcej ludzi, którzy nie otrzymują premii na danym stanowisku.
+select p.stanowisko, d.nr_departamentu from pracownik p, departament d
+WHERE p.nr_departamentu = d.nr_departamentu
+AND (SELECT count(id_pracownika) from pracownik 
+WHERE nr_departamentu = d.nr_departamentu
+and stanowisko = p.stanowisko
+and pensja is null) in
+(SELECT max(count(id_pracownika)) from pracownik
+WHERE pensja is null
+and stanowisko = p.stanowisko
+group by nr_departamentu);
+
+--3. Wypisać nazwy stanowisk, na których pracuje tylko jeden człowiek o najniższym poziomie zarobków 
+--oraz żaden pracownik na tym stanowisku nie bierze udziału w projektach.
+SELECT distinct p.stanowisko from pracownik p, poziom_zarobkow pz
+WHERE NOT EXISTS(SELECT 1 from pracownik p1 WHERE p1.stanowisko = p.stanowisko AND p1.id_pracownika in (SELECT id_pracownika from zlecenie))
+AND 
+(SELECT count(id_pracownika) FROM pracownik, poziom_zarobkow WHERE stanowisko = p.stanowisko AND pensja between dolna_granica AND gorna_granica
+AND nr_przedzialu = (SELECT min(nr_przedzialu) FROM poziom_zarobkow))=1;
+--4. Wypisać nazwiska osób oraz ich stanowiska, pod warunkiem, że w departamencie danej osoby pracuje dodatkowo przynajmniej 
+--jedna osoba na tym samym stanowisku i nie jest ona kierownikiem tej osoby.
+
+SELECT p.nazwisko, p.stanowisko FROM pracownik p, departament d
+WHERE p.nr_departamentu = d.nr_departamentu
+AND EXISTS(SELECT 1 FROM pracownik WHERE id_pracownika!=p.id_pracownika AND stanowisko=p.stanowisko 
+and nr_departamentu = d.nr_departamentu and id_pracownika!=p.id_kierownika)
+
+--5. Wypisać nazwy projektów wraz z liczbą osób przy nich pracujących, pod warunkiem, że przy danym projekcie nie pracuje 
+--żaden podwładny razem ze swoim kierownikiem.
+SELECT pr.nazwa FROM projekt pr, zlecenie z, pracownik p
+WHERE p.id_pracownika = z.id_pracownika AND z.nr_projektu=pr.nr_projektu
+AND (p.id_kierownika,z.nr_projektu) not in (SELECT p1.id_pracownika, z1.nr_projektu FROM pracownik p1, zlecenie z1 WHERE z1.id_pracownika=p1.id_pracownika)
+
+--6. Wypisać nazwy departamentów, w których pracują osoby na przynajmniej dwóch różnych stanowiskach i żadna z osób pracujących 
+--w tym departamencie nie pracowała przy projektach.
+--7. Wypisać nazwiska osób mających inny poziom zarobków niż ich bezpośredni przełożeni, pod warunkiem, że mają ten sam zawód 
+--co ich kierownicy i nie dostawali premii.
+--8. Wypisać stanowiska, na których osoby maja zarobki przynajmniej trzech różnych
+--poziomach, z których żaden nie jest najwyższy.
+--9. Wypisać nazwiska wszystkich szefów pod warunkiem, że każdy szef ma inny zawód i
+--przynajmniej 2 podwładnych pracujących w tym samym departamencie (w departamencie,
+--w którym on sam pracuje).
+--10. Podać nazwiska szefów, którzy brali udział w największej liczbie projektów, pod
+--warunkiem, że żaden z nich nie pracował przy żadnym z projektów ze swoim podwładnym
+--11. Wypisać nazwy departamentów i nazwiska pracowników pracujących w tych
+--departamentach pod warunkiem, że każdy z pracowników danego departamentu ma
+--zarobki na innym poziomie.
+--12. Podać nazwy departamentów i liczbę pracujących w nim ludzi pod warunkiem, że wszyscy
+--oni mają różne zawody i żaden z nich nie pracuje przy tym samym projekcie.
+--13. Podać nazwę departamentu i ile łącznie zarabiają pracownicy tego departamentu, którzy
+--brali udział przy 5 projektach.
+--14. Podać nazwiska osób, które nie są szefami, jeśli przy każdym projekcie dany pracownik
+--pracował z inną osobą.
+--15. Podać nazwisko szefa pod warunkiem, że jest przynajmniej jeden taki projekt, przy którym
+--ten szef pracował ze wszystkimi swoimi podwładnymi.
+--16. Podać nazwisko szefa pod warunkiem, że każdy z jego podwładnych przy każdym projekcie,
+--przy którym pracował, pracował sam.
