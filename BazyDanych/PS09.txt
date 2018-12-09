@@ -10,14 +10,14 @@ and p.id_pracownika not in (SELECT id_kierownika from pracownik))
 GROUP BY p.nr_departamentu;
 
 --2.Dla każdego stanowiska podać nazwę departamentu, w którym pracuje najwięcej ludzi, którzy nie otrzymują premii na danym stanowisku.
-select p.stanowisko, d.nr_departamentu from pracownik p, departament d
+select distinct p.stanowisko, d.nr_departamentu from pracownik p, departament d
 WHERE p.nr_departamentu = d.nr_departamentu
 AND (SELECT count(id_pracownika) from pracownik 
 WHERE nr_departamentu = d.nr_departamentu
 and stanowisko = p.stanowisko
-and pensja is null) in
+and premia is null) in
 (SELECT max(count(id_pracownika)) from pracownik
-WHERE pensja is null
+WHERE premia is null
 and stanowisko = p.stanowisko
 group by nr_departamentu);
 
@@ -43,6 +43,13 @@ WHERE p.id_pracownika = z.id_pracownika AND z.nr_projektu=pr.nr_projektu
 AND (p.id_kierownika,z.nr_projektu) not in (SELECT p1.id_pracownika, z1.nr_projektu FROM pracownik p1, zlecenie z1 WHERE z1.id_pracownika=p1.id_pracownika)
 GROUP BY pr.nazwa
 ORDER BY pr.nazwa;
+--5 od Adama
+select pro.nazwa, count(distinct z.id_pracownika) from projekt pro, zlecenie z, pracownik p
+where z.nr_projektu = pro.nr_projektu and p.id_pracownika = z.id_pracownika
+and pro.nr_projektu not in (select pro3.nr_projektu from pracownik pp, projekt pro3, zlecenie zz
+                        where zz.id_pracownika = pp.id_pracownika and zz.nr_projektu = pro3.nr_projektu 
+                        and pp.id_kierownika in (select zzz.id_pracownika from zlecenie zzz, projekt pro2 where zzz.nr_projektu = pro3.nr_projektu))
+group by pro.nazwa;
 --6. Wypisać nazwy departamentów, w których pracują osoby na przynajmniej dwóch różnych stanowiskach i żadna z osób pracujących 
 --w tym departamencie nie pracowała przy projektach.
 SELECT distinct d.nazwa FROM departament d, pracownik p
@@ -115,7 +122,20 @@ GROUP BY d1.nazwa;
 --14. Podać nazwiska osób, które nie są szefami, jeśli przy każdym projekcie dany pracownik
 --pracował z inną osobą.
 
+
 --15. Podać nazwisko szefa pod warunkiem, że jest przynajmniej jeden taki projekt, przy którym
 --ten szef pracował ze wszystkimi swoimi podwładnymi.
+SELECT szef.nazwisko from pracownik szef
+WHERE szef.id_pracownika in (SELECT id_kierownika from pracownik)
+AND
+((SELECT nr_projektu FROM zlecenie WHERE id_pracownika = szef.id_pracownika)
+INTERSECT
+(SELECT z.nr_projektu FROM zlecenie z, pracownik p WHERE z.id_pracownika=p.id_pracownika and p.id_kierownika=szef.id_pracownika))is not null;
+
 --16. Podać nazwisko szefa pod warunkiem, że każdy z jego podwładnych przy każdym projekcie,
 --przy którym pracował, pracował sam.
+SELECT szef.nazwisko from pracownik szef
+WHERE szef.id_pracownika in (SELECT id_kierownika from pracownik)
+AND
+NOT EXISTS(SELECT z.nr_projektu FROM pracownik p, zlecenie z WHERE p.id_kierownika=szef.id_pracownika AND z.id_pracownika=p.id_pracownika
+GROUP BY z.nr_projektu HAVING count(p.id_pracownika)>1)
