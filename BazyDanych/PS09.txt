@@ -2,8 +2,8 @@
 --którego zarobki są na najwyższym poziomie i nie jest on kierownikiem (nie ma podwładnych).
 SELECT sum(p.pensja+nvl(p.premia,0)) from pracownik p, departament d, poziom_zarobkow pz
 WHERE p.nr_departamentu = d.nr_departamentu 
-AND p.pensja +nvl(p.premia,0) between pz.dolna_granica and pz.gorna_granica 
 and pz.nr_przedzialu = (SELECT max(nr_przedzialu) FROM poziom_zarobkow)
+AND p.pensja +nvl(p.premia,0) between pz.dolna_granica and pz.gorna_granica 
 and p.id_pracownika not in (SELECT id_kierownika from pracownik)
 GROUP BY p.nr_departamentu;
 
@@ -76,13 +76,31 @@ WHERE p1.id_pracownika=k.id_pracownika AND p1.id_pracownika=z1.id_pracownika AND
 (SELECT max(count(pr.nr_projektu)) FROM pracownik p, zlecenie z, projekt pr
 WHERE p.id_pracownika = z.id_pracownika and z.nr_projektu=pr.nr_projektu
 GROUP BY p.nazwisko)
-AND
+AND 
+((SELECT z2.nr_projektu FROM pracownik p2, zlecenie z2 WHERE p2.id_pracownika=k.id_pracownika and p2.id_pracownika=z2.id_pracownika)
+INTERSECT (SELECT z3.nr_projektu FROM pracownik p3, zlecenie z3 WHERE p3.id_kierownika=k.id_pracownika and p3.id_pracownika=z3.id_pracownika))
+is null;
 
 --11. Wypisać nazwy departamentów i nazwiska pracowników pracujących w tych
 --departamentach pod warunkiem, że każdy z pracowników danego departamentu ma
 --zarobki na innym poziomie.
+SELECT d.nazwa, p.nazwisko FROM pracownik p, departament d
+WHERE p.nr_departamentu = d.nr_departamentu
+AND 
+NOT EXISTS(SELECT 1 FROM pracownik p1 WHERE p1.nr_departamentu = d.nr_departamentu AND
+p1.pensja in (SELECT pensja from pracownik WHERE id_pracownika!=p1.id_pracownika and nr_departamentu=p1.nr_departamentu));
 --12. Podać nazwy departamentów i liczbę pracujących w nim ludzi pod warunkiem, że wszyscy
 --oni mają różne zawody i żaden z nich nie pracuje przy tym samym projekcie.
+SELECT d.nazwa, count(p.id_pracownika) FROM departament d, pracownik p
+WHERE p.nr_departamentu = d.nr_departamentu 
+AND NOT EXISTS(SELECT 1 FROM pracownik p1 WHERE p1.nr_departamentu = d.nr_departamentu 
+AND p1.stanowisko in (SELECT stanowisko FROM pracownik WHERE id_pracownika!=p1.id_pracownika))
+AND NOT EXISTS (SELECT 1 FROM pracownik p2 WHERE p2.nr_departamentu = d.nr_departamentu 
+AND (SELECT nr_projektu FROM zlecenie z3 WHERE z3.id_pracownika = p2.id_pracownika)!=ALL
+(SELECT nr_projektu FROM zlecenie z4 WHERE z4.id_pracownika !=p2.id_pracownika)
+)
+GROUP BY d.nazwa;
+
 --13. Podać nazwę departamentu i ile łącznie zarabiają pracownicy tego departamentu, którzy
 --brali udział przy 5 projektach.
 --14. Podać nazwiska osób, które nie są szefami, jeśli przy każdym projekcie dany pracownik
