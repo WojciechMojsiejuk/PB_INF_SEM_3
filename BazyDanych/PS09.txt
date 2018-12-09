@@ -32,25 +32,52 @@ AND nr_przedzialu = (SELECT min(nr_przedzialu) FROM poziom_zarobkow))=1;
 SELECT p.nazwisko, p.stanowisko FROM pracownik p, departament d
 WHERE p.nr_departamentu = d.nr_departamentu
 AND EXISTS(SELECT 1 FROM pracownik WHERE id_pracownika!=p.id_pracownika AND stanowisko=p.stanowisko 
-and nr_departamentu = d.nr_departamentu and id_pracownika!=p.id_kierownika)
+and nr_departamentu = d.nr_departamentu and id_pracownika!=p.id_kierownika);
 
 --5. Wypisać nazwy projektów wraz z liczbą osób przy nich pracujących, pod warunkiem, że przy danym projekcie nie pracuje 
 --żaden podwładny razem ze swoim kierownikiem.
-SELECT pr.nazwa FROM projekt pr, zlecenie z, pracownik p
+SELECT pr.nazwa, count(p.id_pracownika) FROM projekt pr, zlecenie z, pracownik p
 WHERE p.id_pracownika = z.id_pracownika AND z.nr_projektu=pr.nr_projektu
 AND (p.id_kierownika,z.nr_projektu) not in (SELECT p1.id_pracownika, z1.nr_projektu FROM pracownik p1, zlecenie z1 WHERE z1.id_pracownika=p1.id_pracownika)
-
+GROUP BY pr.nazwa
+ORDER BY pr.nazwa;
 --6. Wypisać nazwy departamentów, w których pracują osoby na przynajmniej dwóch różnych stanowiskach i żadna z osób pracujących 
 --w tym departamencie nie pracowała przy projektach.
+SELECT distinct d.nazwa FROM departament d, pracownik p
+WHERE NOT EXISTS(SELECT 1 from pracownik p1, zlecenie z WHERE p1.nr_departamentu = d.nr_departamentu and p1.id_pracownika = z.id_pracownika)
+AND (SELECT count(distinct stanowisko) from pracownik where nr_departamentu = d.nr_departamentu)>=2;
 --7. Wypisać nazwiska osób mających inny poziom zarobków niż ich bezpośredni przełożeni, pod warunkiem, że mają ten sam zawód 
 --co ich kierownicy i nie dostawali premii.
---8. Wypisać stanowiska, na których osoby maja zarobki przynajmniej trzech różnych
+SELECT p.nazwisko from pracownik p, pracownik k
+WHERE p.id_kierownika = k.id_pracownika
+AND p.pensja != k.pensja AND p.stanowisko = k.stanowisko and p.premia is null;
+--!8. Wypisać stanowiska, na których osoby maja zarobki przynajmniej trzech różnych
 --poziomach, z których żaden nie jest najwyższy.
+SELECT p.stanowisko FROM pracownik p
+WHERE 
+(SELECT count(pz.nr_przedzialu) FROM poziom_zarobkow pz, pracownik p1 WHERE p1.stanowisko = p.stanowisko 
+AND p1.pensja between pz.dolna_granica AND pz.gorna_granica)>=3
+AND NOT EXISTS (SELECT 1 FROM poziom_zarobkow, pracownik WHERE stanowisko = p.stanowisko AND nr_przedzialu=(SELECT max(nr_przedzialu) FROM poziom_zarobkow));
+
 --9. Wypisać nazwiska wszystkich szefów pod warunkiem, że każdy szef ma inny zawód i
 --przynajmniej 2 podwładnych pracujących w tym samym departamencie (w departamencie,
 --w którym on sam pracuje).
+
+SELECT p.nazwisko FROM pracownik p
+WHERE NOT EXISTS
+(SELECT 1 from pracownik WHERE id_pracownika in (SELECT id_kierownika FROM pracownik) AND p.id_pracownika!=id_pracownika and p.stanowisko = stanowisko)
+AND (SELECT count (id_pracownika) FROM pracownik WHERE id_kierownika = p.id_kierownika AND nr_departamentu=p.nr_departamentu)>=2;
 --10. Podać nazwiska szefów, którzy brali udział w największej liczbie projektów, pod
 --warunkiem, że żaden z nich nie pracował przy żadnym z projektów ze swoim podwładnym
+SELECT k.nazwisko FROM pracownik k
+WHERE
+(SELECT count(pr1.nr_projektu)FROM pracownik p1, zlecenie z1, projekt pr1 
+WHERE p1.id_pracownika=k.id_pracownika AND p1.id_pracownika=z1.id_pracownika AND z1.nr_projektu=pr1.nr_projektu)=
+(SELECT max(count(pr.nr_projektu)) FROM pracownik p, zlecenie z, projekt pr
+WHERE p.id_pracownika = z.id_pracownika and z.nr_projektu=pr.nr_projektu
+GROUP BY p.nazwisko)
+AND
+
 --11. Wypisać nazwy departamentów i nazwiska pracowników pracujących w tych
 --departamentach pod warunkiem, że każdy z pracowników danego departamentu ma
 --zarobki na innym poziomie.
