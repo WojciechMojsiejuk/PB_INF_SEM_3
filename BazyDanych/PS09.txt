@@ -1,10 +1,12 @@
 --1.Wypisać sumę zarobków ludzi będących w tym samym departamencie, pod warunkiem, że w tym departamencie pracuje przynajmniej jeden człowiek,
 --którego zarobki są na najwyższym poziomie i nie jest on kierownikiem (nie ma podwładnych).
-SELECT sum(p.pensja+nvl(p.premia,0)) from pracownik p, departament d, poziom_zarobkow pz
+SELECT sum(p.pensja+nvl(p.premia,0)) from pracownik p, departament d
+WHERE 
+EXISTS(SELECT 1 FROM pracownik, poziom_zarobkow pz
 WHERE p.nr_departamentu = d.nr_departamentu 
-and pz.nr_przedzialu = (SELECT max(nr_przedzialu) FROM poziom_zarobkow)
+AND pz.nr_przedzialu = (SELECT max(nr_przedzialu) FROM poziom_zarobkow)
 AND p.pensja +nvl(p.premia,0) between pz.dolna_granica and pz.gorna_granica 
-and p.id_pracownika not in (SELECT id_kierownika from pracownik)
+and p.id_pracownika not in (SELECT id_kierownika from pracownik))
 GROUP BY p.nr_departamentu;
 
 --2.Dla każdego stanowiska podać nazwę departamentu, w którym pracuje najwięcej ludzi, którzy nie otrzymują premii na danym stanowisku.
