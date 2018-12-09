@@ -91,22 +91,30 @@ WHERE p.nr_departamentu = d.nr_departamentu
 AND 
 NOT EXISTS(SELECT 1 FROM pracownik p1 WHERE p1.nr_departamentu = d.nr_departamentu AND
 p1.pensja in (SELECT pensja from pracownik WHERE id_pracownika!=p1.id_pracownika and nr_departamentu=p1.nr_departamentu));
---12. Podać nazwy departamentów i liczbę pracujących w nim ludzi pod warunkiem, że wszyscy
+--!NIEDZIALA 12. Podać nazwy departamentów i liczbę pracujących w nim ludzi pod warunkiem, że wszyscy
 --oni mają różne zawody i żaden z nich nie pracuje przy tym samym projekcie.
 SELECT d.nazwa, count(p.id_pracownika) FROM departament d, pracownik p
 WHERE p.nr_departamentu = d.nr_departamentu 
 AND NOT EXISTS(SELECT 1 FROM pracownik p1 WHERE p1.nr_departamentu = d.nr_departamentu 
 AND p1.stanowisko in (SELECT stanowisko FROM pracownik WHERE id_pracownika!=p1.id_pracownika))
 AND NOT EXISTS (SELECT 1 FROM pracownik p2 WHERE p2.nr_departamentu = d.nr_departamentu 
-AND (SELECT nr_projektu FROM zlecenie z3 WHERE z3.id_pracownika = p2.id_pracownika)!=ALL
+AND ((SELECT nr_projektu FROM zlecenie z3 WHERE z3.id_pracownika = p2.id_pracownika)INTERSECT
 (SELECT nr_projektu FROM zlecenie z4 WHERE z4.id_pracownika !=p2.id_pracownika)
-)
+)is null)
 GROUP BY d.nazwa;
 
 --13. Podać nazwę departamentu i ile łącznie zarabiają pracownicy tego departamentu, którzy
 --brali udział przy 5 projektach.
+SELECT d1.nazwa, nvl(SUM(A.pensja),0)
+FROM departament d1,
+(SELECT p.nr_departamentu, p.pensja FROM pracownik p, departament d
+WHERE d.nr_departamentu=p.nr_departamentu 
+AND (SELECT count(z.nr_projektu) FROM zlecenie z WHERE z.id_pracownika = p.id_pracownika)=5)A
+WHERE d1.nr_departamentu = A.nr_departamentu(+)
+GROUP BY d1.nazwa;
 --14. Podać nazwiska osób, które nie są szefami, jeśli przy każdym projekcie dany pracownik
 --pracował z inną osobą.
+
 --15. Podać nazwisko szefa pod warunkiem, że jest przynajmniej jeden taki projekt, przy którym
 --ten szef pracował ze wszystkimi swoimi podwładnymi.
 --16. Podać nazwisko szefa pod warunkiem, że każdy z jego podwładnych przy każdym projekcie,
