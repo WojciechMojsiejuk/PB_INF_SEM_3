@@ -1,0 +1,60 @@
+create [or replace] view nazwa_perspektywy
+[(nazwy.kolumn)]
+as select …
+
+drop view nazwa_perspektywy
+
+wirtualna tabela do której możemy sie odwoływać
+
+
+--1. Wypisać nazwy tych projektów, których budżet został wyczerpany (perspektywa: nr_projektu i dotychczasowe wydatki na projekt).
+create view WydatkiNaProjektMojsiejuk (nr_projektu,wydatki)
+as select nr_projektu, nvl(sum(stawka_za_godzine*ilosc_godzin),0) from zlecenie
+GROUP BY nr_projektu;
+
+SELECT w.nr_projektu,w.wydatki FROM WydatkiNaProjektMojsiejuk w ,projekt p
+WHERE w.nr_projektu=p.nr_projektu
+AND w.wydatki>p.budzet;
+drop view WydatkiNaProjektMojsiejuk;
+
+
+
+--2. Dla każdego departamentu (nazwa) wypisać stanowiska najliczniej obsadzone (perspektywa: nr_departamentu, stanowisko, liczba osób na stanowisku).
+create or replace view IlOsNaDepMoj(departament,stanowisko,liczbaosob)
+AS SELECT nr_departamentu, stanowisko, count(id_pracownika) from pracownik group by nr_departamentu, stanowisko;
+SELECT p.departament, p.stanowisko FROM IlOSNaDepMoj p
+WHERE p.liczbaosob=
+(SELECT max(liczbaosob) from IlOsNADepMoj
+WHERE departament=p.departament);
+DROP view IlOsNaDepMoj;
+--3. W realizacji projektów biorą udział pracownicy zatrudnieni na różnych stanowiskach. 
+--Podać nazwę stanowiska, na które było największe zapotrzebowanie w projektach rozpoczętych w roku 1999
+--(perspektywa: stanowisko, liczba osób na stanowisku w projektach rozpoczętych w 1999 roku).
+create or replace view IleOsNaStan1999(stanowisko,liczbaosob)
+AS SELECT p.stanowisko, count(p.id_pracownika) from pracownik p, zlecenie z, projekt pr
+WHERE p.id_pracownika = z.id_pracownika AND z.nr_projektu=pr.nr_projektu AND TO_CHAR(pr.data_rozpoczecia,'YYYY')='1982'
+GROUP BY p.stanowisko;
+SELECT * FROM IleOsNaStan1999
+WHERE liczbaosob=
+(SELECT max(liczbaosob) FROM IleOsNaStan1999);
+DROP view IleOsNaStan1999;
+
+--4. Podać nazwiska pracowników zatrudnionych w tym samym departamencie co pan Nazwisko3 i którzy zarabiają mniej
+--niż średnia wartość pensji w tym departamencie.
+create or replace view PracujeZNaz3(nazwisko,pensja)
+AS SELECT nazwisko, pensja FROM pracownik
+WHERE nr_departamentu = (SELECT nr_departamentu FROM pracownik WHERE nazwisko = 'Nazwisko3');
+SELECT * FROM PracujeZNaz3
+WHERE pensja <(SELECT avg(pensja) FROM PracujeZNaz3);
+DROP view PracujeZNaz3;
+
+--5. Dla każdego departamentu podać nazwiska tych pracowników, którzy zarabiają mniej niż średnia wartość pensji w ich departamencie.
+create or replace view SredniaWDep(nr,srednia)
+AS SELECT nr_departamentu, avg(pensja) FROM pracownik GROUP BY nr_departamentu;
+SELECT nazwisko, pensja, nr_departamentu FROM pracownik,SredniaWDep s
+WHERE nr_departamentu= s.nr AND pensja<s.srednia;
+--6. Wyznaczyć listę kierowników (podać nazwisko) i liczbę ich podwładnych.
+--7. Dla każdego projektu podać jakie stanowisko w jakim procencie jest reprezentowane.
+--Podać informacje tylko o tych projektach, przy których pracują tylko osoby nie będące
+--kierownikami.
+--8. Dla każdego pracownika wypisać różnicę między jego pensją a średnią pensją w firmie.
