@@ -1,29 +1,3 @@
-kod_zad_3.txt
-Informacje
-Aktywność
-kod_zad_3.txt
-Informacje o udostępnianiu
-K
-Informacje ogólne
-Typ
-Tekst
-Rozmiar
-2 KB (1 589 bajtów)
-Wykorzystane miejsce na dane:
-0 bajtówWłasność domeny undefined
-Lokalizacja
-zad3
-Właściciel
-Kamil Mierzwiński
-Zmodyfikowany
-13:21 przez: Kamil Mierzwiński
-Utworzono
-13:21
-Opis
-Brak opisu
-Uprawnienia do pobierania
-Przeglądający mogą pobierać
-
 argr_gra = 500;
 args = 8000;
 N = 3;
