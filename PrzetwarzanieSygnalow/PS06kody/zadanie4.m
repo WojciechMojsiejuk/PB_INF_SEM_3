@@ -1,31 +1,3 @@
-kod_zad_4.txt
-Informacje
-Aktywność
-kod_zad_4.txt
-Informacje o udostępnianiu
-K
-Informacje ogólne
-Typ
-Tekst
-Rozmiar
-3 KB (3 220 bajtów)
-Wykorzystane miejsce na dane:
-0 bajtówWłasność domeny undefined
-Lokalizacja
-zad4
-Właściciel
-Kamil Mierzwiński
-Zmodyfikowany
-13:24 przez: Kamil Mierzwiński
-Otwarty
-19:04 przeze mnie
-Utworzono
-13:24
-Opis
-Brak opisu
-Uprawnienia do pobierania
-Przeglądający mogą pobierać
-
 fs = 8000;
 f1 = 1000;
 f2=2000;
