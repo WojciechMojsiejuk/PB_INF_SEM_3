@@ -1,0 +1,61 @@
+--17
+DROP TABLE STUDENCI_MOJWOJ;
+DROP TABLE WYDZIALY_MOJWOJ;
+DROP TABLE STYPENDIA_MOJWOJ;
+DROP TABLE AKADEMIKI_MOJWOJ;
+--1
+CREATE TABLE WYDZIALY_MOJWOJ
+(
+id_wydzialu number primary key,
+nazwa_wydzialu varchar2(50),
+adres varchar2(100)
+);
+CREATE TABLE STUDENCI_MOJWOJ
+(indeks Number primary key,
+nazwisko varchar2(50) not null CHECK (nazwisko = initcap(nazwisko)),
+imie varchar2(50) not null CHECK (imie = initcap(imie) ),
+wydzial number REFERENCES WYDZIALY_MOJWOJ(id_wydzialu) ON DELETE CASCADE,
+srednia number CHECK (srednia between 2 and 5),
+rokstudiow number default 1 CHECK(rokstudiow in (1,2,3,4,5)),
+plec varchar(1) CHECK (plec in ('K','M')),
+dataurodzenia date
+);
+CREATE TABLE STYPENDIA_MOJWOJ
+(
+grupaZaszeregowania number primary key,
+dolnyProg number,
+gornyProg number,
+kwota number,
+CHECK(dolnyProg<gornyProg)
+);
+--4
+ALTER TABLE STUDENCI_MOJWOJ MODIFY dataurodzenia date CONSTRAINT ZgodnoscDat_MOJWOJ CHECK(dataurodzenia<to_date('21/12/2018','DD/MM/YYYY'));
+--5
+insert into wydzialy_mojwoj values (1,'Informatyki','Super adres');
+insert into akademiki_mojwoj values(1,'Alfa',2);
+insert into studenci_mojwoj values (104206, 'Kowalski', 'Adam', 1, 4.3,1,'M', to_date('23.11.2020','DD/MM/YYYY'),1,2);
+ALTER TABLE STUDENCI_MOJWOJ DROP CONSTRAINT ZgodnoscDat_MOJWOJ;
+--6
+CREATE TABLE AKADEMIKI_MOJWOJ
+(
+id_akademika number(5),
+nazwa_akademika varchar2(50),
+id_pokoju number(5),
+CONSTRAINT akademiki_MOJWOJ PRIMARY KEY(id_akademika,id_pokoju)
+);
+ALTER TABLE STUDENCI_MOJWOJ ADD
+(
+id_akademika number(5),
+id_pokoju number(20)
+);
+ALTER TABLE STUDENCI_MOJWOJ ADD
+(
+CONSTRAINT mieszkanieStudenta_MOJWOJ 
+FOREIGN KEY (id_pokoju,id_akademika)
+REFERENCES AKADEMIKI_MOJWOJ(id_pokoju,id_akademika)
+);
+SELECT * FROM STUDENCI_MOJWOJ;
+CREATE TABLE WYPLATA
+(
+    indeksStudentu number 
+);
