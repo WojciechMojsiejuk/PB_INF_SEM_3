@@ -1,0 +1,44 @@
+--Zrealizuj zapytania 1-3 przy użyciu perspektyw:
+--1. Podać nazwiska szefów, którzy brali udział w największej liczbie projektów, pod warunkiem, że
+--żaden z nich nie pracował przy żadnym z projektów ze swoim podwładnym.
+CREATE OR REPLACE view ProjektyKierownikaMojsiejuk (id_kierownika, nazwisko_kierownika, liczba_projektow)
+as select p.id_pracownika,p.nazwisko, count(distinct z.nr_projektu)  from pracownik p, zlecenie z 
+where p.id_pracownika in (SELECT id_kierownika from pracownik WHERE id_kierownika is not null) 
+AND p.id_pracownika=z.id_pracownika
+GROUP BY p.id_pracownika,p.nazwisko;
+
+select * from ProjektyKierownikaMojsiejuk
+where liczba_projektow = (SELECT max(liczba_projektow) from ProjektyKierownikaMojsiejuk)
+AND NOT EXISTS(SELECT 1 from pracownik p,zlecenie z1, zlecenie z2
+WHERE p.id_kierownika = ProjektyKierownikaMojsiejuk.id_kierownika
+AND z1.id_pracownika = p.id_pracownika AND z2.id_pracownika = ProjektyKierownikaMojsiejuk.id_kierownika
+AND z1.nr_projektu = z2.nr_projektu);
+
+
+--2. Wypisać nazwy projektów wraz z liczbą osób przy nich pracujących, pod warunkiem, że przy
+--danym projekcie nie pracuje żaden podwładny razem ze swoim kierownikiem.
+SELECT pr.nazwa, count (*) from projekt pr, ProjektyKierownikaMojsiejuk pkm, zlecenie z
+WHERE pr.nr_projektu = z.nr_projektu AND z.id_pracownika = pkm.id_kierownika OR  z.id_pracownika in (SELECT id_pracownika FROM pracownik where id_kierownika = pkm.id_kierownika)
+AND NOT EXISTS(SELECT 1 from pracownik p,zlecenie z1, zlecenie z2
+WHERE p.id_kierownika = pkm.id_kierownika
+AND z1.id_pracownika = p.id_pracownika AND z2.id_pracownika = pkm.id_kierownika
+AND z1.nr_projektu = z2.nr_projektu)
+GROUP BY pr.nazwa;
+--3. Podać nazwy stanowisk, na których pracują tylko pracownicy zarabiający powyżej średniej
+--pensji w firmie. Dodatkowo wypisać liczbę osób pracujących nad projektami oraz liczbę osób
+--pracujących w tym samym departamencie co Prezes.
+--4. Zaprojektować i stworzyć bazę danych do obsługi jednej edycji konkursu. Konkurs składa się z
+--pewnej liczby pytań testowych, z dowolną liczbą odpowiedzi, liczba odpowiedzi poprawnych dla każdego pytania również może być większa niż 1. W konkursie mogą brać udział uczniowie wszystkich klas gimnazjum. Do rejestracji wymagane jest imię, nazwisko, klasa, PESEL, nazwa i adres szkoły. Z jednej szkoły do konkursu może przystąpić wielu uczniów. Baza ma umożliwiać przygotowanie następujących raportów:
+--a. Lista zadań wraz z odpowiedziami
+--b. Lista uczestników z możliwością wyodrębnienia uczniów konkretnej szkoły, klasy, czy
+--województwa.
+--c. Dla każdej szkoły informacja gdzie odbywa się konkurs (kilka szkół może mieć jedną
+--lokalizację) oraz kto w szkole jest odpowiedzialny za jego przeprowadzenie.
+--d. Wyniki uczniów oraz informacja, które zadania zostały wykonane niepoprawnie (jakie
+--opcje wybrał uczeń).
+--e. Ranking uczniów ze względu na liczbę uzyskanych punktów.
+--5. Wstawić dane do tabel.
+--6. Dla osób uczęszczających do pierwszej klasy gimnazjum należy dodać bonus punktowy – 10
+--pkt, dla drugiej 5 pkt.
+--7. Dodać kolumnę, która będzie informowała o miejscu zdobytym przez ucznia w konkursie.
+--Wartości tej cechy nie mogą być ujemne.
