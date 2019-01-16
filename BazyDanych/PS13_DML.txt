@@ -1,0 +1,60 @@
+CREATE TABLE pytania_WM(
+id_pytania number(3) primary key,
+tresc varchar2(200) not null
+);
+CREATE TABLE odpowiedzi_WM(
+id_odpowiedzi number(4) primary key,
+tresc varchar2(200) not null,
+czyPoprawna varchar2(10) not null constraint prawdafalsz check (czyPoprawna in ('Prawda','Falsz'))
+);
+CREATE TABLE pytania_odpowiedzi_WM(
+id_pytania number(3),
+id_odpowiedzi number(4),
+CONSTRAINT fk_pytania
+FOREIGN KEY (id_pytania)
+REFERENCES pytania_WM(id_pytania)
+ON DELETE CASCADE,
+CONSTRAINT fk_odpowiedzi
+FOREIGN KEY (id_odpowiedzi)
+REFERENCES odpowiedzi_WM(id_odpowiedzi)
+ON DELETE CASCADE
+);
+CREATE TABLE uczniowie_WM(
+imie varchar2(20) not null,
+nazwisko varchar2(40) not null,
+klasa number(1) constraint nr_klasy check(klasa in (1,2,3)),
+pesel number(9) primary key constraint iloscPesel check(length(pesel)=9)
+);
+CREATE TABLE wynikiUczniow(
+pesel number(9),
+id_pytania number(3),
+id_odpowiedzi number(4),
+czy_prawidlowa varchar2(10),
+FOREIGN KEY (id_odpowiedzi)
+REFERENCES odpowiedzi_WM(id_odpowiedzi)
+ON DELETE CASCADE,
+FOREIGN KEY (id_pytania)
+REFERENCES pytania_WM(id_pytania)
+ON DELETE CASCADE,
+FOREIGN KEY (pesel)
+REFERENCES uczniowie_WM(pesel)
+ON DELETE CASCADE
+);
+
+INSERT INTO pytania_WM VALUES (1,'Czy zalicze bazy');
+INSERT INTO odpowiedzi_WM VALUES (1,'Otoz nie','Falsz');
+INSERT INTO odpowiedzi_WM VALUES (2,'Otoz tak','Prawda');
+INSERT INTO odpowiedzi_WM VALUES (3,'Byloby milo','Prawda');
+INSERT INTO pytania_odpowiedzi_WM VALUES (1,1);
+INSERT INTO pytania_odpowiedzi_WM VALUES (1,2);
+INSERT INTO uczniowie_WM VALUES ('Jan','Kowalski',1,123456789);
+INSERT INTO uczniowie_WM VALUES ('Jan','Kowalski',2,123456788);
+INSERT INTO uczniowie_WM VALUES ('Jan','Kowalski',3,123456787);
+INSERT INTO pytania_odpowiedzi_WM(id_pytania,id_odpowiedzi) SELECT id_pytania, id_odpowiedzi FROM pytania_WM,odpowiedzi_WM WHERE id_odpowiedzi=3;
+SELECT * FROM pytania_WM;
+SELECT * FROM odpowiedzi_WM;
+SELECT * FROM pytania_odpowiedzi_WM;
+DROP TABLE pytania_odpowiedzi_WM;
+DROP TABLE pytania_WM;
+DROP TABLE odpowiedzi_WM;
+DROP TABLE uczniowie_WM;
