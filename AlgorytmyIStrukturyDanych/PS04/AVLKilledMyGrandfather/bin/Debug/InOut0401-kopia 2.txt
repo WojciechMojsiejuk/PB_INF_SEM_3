@@ -1,0 +1,10 @@
+caae p1
+bdca p2
+abec p3
+bacd p4
+adba p5
+cbab p6
+becb p7
+cbce p8
+cdcd p9
+

@@ -1,0 +1,12 @@
+/Users/wojciechmojsiejuk/Projects/DrzewoAVL/DrzewoAVL/obj/x86/Debug/DrzewoAVL.csprojAssemblyReference.cache
+/Users/wojciechmojsiejuk/Projects/DrzewoAVL/DrzewoAVL/obj/x86/Debug/DrzewoAVL.csproj.CoreCompileInputs.cache
+/Users/wojciechmojsiejuk/Projects/DrzewoAVL/DrzewoAVL/bin/Debug/DrzewoAVL.exe
+/Users/wojciechmojsiejuk/Projects/DrzewoAVL/DrzewoAVL/bin/Debug/DrzewoAVL.pdb
+/Users/wojciechmojsiejuk/Projects/DrzewoAVL/DrzewoAVL/obj/x86/Debug/DrzewoAVL.exe
+/Users/wojciechmojsiejuk/Projects/DrzewoAVL/DrzewoAVL/obj/x86/Debug/DrzewoAVL.pdb
+/Users/wojciechmojsiejuk/Downloads/PS0910/DrzewoAVL/bin/Debug/DrzewoAVL.exe
+/Users/wojciechmojsiejuk/Downloads/PS0910/DrzewoAVL/bin/Debug/DrzewoAVL.pdb
+/Users/wojciechmojsiejuk/Downloads/PS0910/DrzewoAVL/obj/x86/Debug/DrzewoAVL.csprojAssemblyReference.cache
+/Users/wojciechmojsiejuk/Downloads/PS0910/DrzewoAVL/obj/x86/Debug/DrzewoAVL.csproj.CoreCompileInputs.cache
+/Users/wojciechmojsiejuk/Downloads/PS0910/DrzewoAVL/obj/x86/Debug/DrzewoAVL.exe
+/Users/wojciechmojsiejuk/Downloads/PS0910/DrzewoAVL/obj/x86/Debug/DrzewoAVL.pdb

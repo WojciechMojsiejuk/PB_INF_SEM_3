@@ -1,0 +1,11 @@
+bdca p11
+adba p21
+cbab p31
+abec p41
+bacd p51
+becb p61
+dece p71
+bacc p81
+bbec p91
+cbce p92
+ecde p99

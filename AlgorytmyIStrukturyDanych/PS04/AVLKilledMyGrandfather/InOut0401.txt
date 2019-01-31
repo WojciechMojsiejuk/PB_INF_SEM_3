@@ -1,5 +1,6 @@
-Anna Balbina
-Czeslaw Darek
-Eugeniusz Filip
-Kasia Jan
-Ludmila Adam
+s1 t1
+s2 t2
+s3 t3
+s4 t4
+s5 t5
+s6 t6

@@ -1,0 +1,12 @@
+bdca p1
+adba p2
+cbab p3
+abec p4
+bacd p5
+bacc p6
+bbec p7
+cbab p8
+becb p9
+dece p91
+cbce p92
+ecde p99 
