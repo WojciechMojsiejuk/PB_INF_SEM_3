@@ -34,7 +34,7 @@ namespace AVL
                 Console.WriteLine("5. Usun -> Slowo_polskie");
                 Console.WriteLine("6. Usun -> Slowo_angielskie");
                 Console.WriteLine("7. Wypisz slownik w porządku KLP");
-                Console.WriteLine("8. Dodaj 5 losowe słowa do słownika");
+                Console.WriteLine("8. Dodaj 5 losowych słów do słownika");
                 Console.WriteLine("0. Wyjdz i zapisz zmiany");
                 input = Console.ReadLine();
                 int d;
@@ -50,92 +50,136 @@ namespace AVL
                         break;
                     case 1:
                         Console.WriteLine("Podaj slowo polskie");
-                        input = Console.ReadLine();
-                        p.CzyWywazone = false;
-                        Wezel temp = p.korzen;
-                        bool rotacja = false;
-                        watch = Stopwatch.StartNew();
-                        try
-                        {
-
-                            p.WstawSlowo(ref temp, input, ref rotacja);
-                        }
-                        catch (Exception e)
-                        {
-                            Console.WriteLine(e.Message);
-                            break;
-                        }
-                        p.korzen = temp;
-                        watch.Stop();
-                        Console.WriteLine("Dodano. Zajelo to: {0} milisekund", (double)watch.ElapsedMilliseconds);
-                        var pol = p.Wyszukaj(p.korzen, input);
+                        string temp1 = Console.ReadLine();
                         Console.WriteLine("Podaj tlumaczenie");
-                        input = Console.ReadLine();
-                        Wezel temp2 = a.korzen;
-                        bool rotacja2 = false;
-                        watch = Stopwatch.StartNew();
-                        try
+                        string temp2 = Console.ReadLine();
+                        Wezel temp1synonim = p.Wyszukaj(p.korzen, temp1);
+                        Wezel temp2synonim = a.Wyszukaj(a.korzen, temp2);
+                        if(temp1synonim == null && temp2synonim==null)
                         {
-                            a.WstawSlowo(ref temp2, input, ref rotacja2);
+                            p.CzyWywazone = false;
+                            Wezel temp = p.korzen;
+                            bool rotacja = false;
+                            watch = Stopwatch.StartNew();
+                            try
+                            {
+                                p.WstawSlowo(ref temp, temp1, ref rotacja);
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e.Message);
+                                break;
+                            }
+                            p.korzen = temp;
+                            watch.Stop();
+                            Console.WriteLine("Dodano. Zajelo to: {0} milisekund", (double)watch.ElapsedMilliseconds);
+                            var pol = p.Wyszukaj(p.korzen, temp1);
+                            Wezel temp2ang = a.korzen;
+                            bool rotacja2 = false;
+                            watch = Stopwatch.StartNew();
+                            try
+                            {
+                                a.WstawSlowo(ref temp2ang, temp2, ref rotacja2);
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e.Message);
+                                break;
+                            }
+                            watch.Stop();
+                            Console.WriteLine("Dodano. Zajelo to: {0} milisekund", (double)watch.ElapsedMilliseconds);
+                            a.korzen = temp2ang;
+                            var ang = a.Wyszukaj(a.korzen, temp2);
+                            ang.Tlumaczenie = pol;
+                            pol.Tlumaczenie = ang;
+
                         }
-                        catch (Exception e)
+                        else
                         {
-                            Console.WriteLine(e.Message);
-                            //Usun wstawione slowo polskie, poniewaz nie mozna wstawic tlumaczenia
-                            throw new NotImplementedException();
-                            break;
+                            if (temp1synonim == null)
+                            {
+                                Console.WriteLine("Słowo angielskie {0} znajduje sie juz w zbiorze, nie zostanie dodane", temp2synonim.Slowo);
+                                continue;
+                            }
+                            if (temp2synonim == null)
+                            {
+                                Console.WriteLine("Słowo polskie {0} znajduje sie juz w zbiorze, nie zostanie dodane", temp1synonim.Slowo);
+                                continue;
+                            }
+                            if (temp1synonim != null && temp2synonim != null)
+                            {
+                                Console.WriteLine("Słowo angielskie {0} i słowo polskie {1} znajdują sie juz w zbiorze, nie zostaną dodane", temp2synonim.Slowo, temp1synonim.Slowo);
+                                continue;
+                            }
+                            throw new Exception("Fatal error");
                         }
-                        watch.Stop();
-                        Console.WriteLine("Dodano. Zajelo to: {0} milisekund", (double)watch.ElapsedMilliseconds);
-                        a.korzen = temp2;
-                        var ang = a.Wyszukaj(a.korzen, input);
-                        ang.Tlumaczenie = pol;
-                        pol.Tlumaczenie = ang;
                         break;
 
                     case 2:
                         Console.WriteLine("Podaj slowo angielskie");
-                        input = Console.ReadLine();
-                        a.CzyWywazone = false;
-                        Wezel temp3 = a.korzen;
-                        bool rotacja3 = false;
-                        watch = Stopwatch.StartNew();
-                        try
-                        {
-
-                            a.WstawSlowo(ref temp3, input, ref rotacja3);
-                        }
-                        catch (Exception e)
-                        {
-                            Console.WriteLine(e.Message);
-                            break;
-                        }
-                        a.korzen = temp3;
-                        watch.Stop();
-                        Console.WriteLine("Dodano. Zajelo to: {0} milisekund", (double)watch.ElapsedMilliseconds);
-                        var ang1 = a.Wyszukaj(a.korzen, input);
+                        string temp3 = Console.ReadLine();
                         Console.WriteLine("Podaj tlumaczenie");
-                        input = Console.ReadLine();
-                        Wezel temp4 = p.korzen;
-                        bool rotacja4 = false;
-                        watch = Stopwatch.StartNew();
-                        try
+                        string temp4 = Console.ReadLine();
+                        Wezel temp4synonim = p.Wyszukaj(p.korzen, temp4);
+                        Wezel temp3synonim = a.Wyszukaj(a.korzen, temp3);
+                        if (temp3synonim == null && temp4synonim == null)
                         {
-                            p.WstawSlowo(ref temp4, input, ref rotacja4);
+                            a.CzyWywazone = false;
+                            Wezel temp3ang = a.korzen;
+                            bool rotacja3 = false;
+                            watch = Stopwatch.StartNew();
+                            try
+                            {
+                                a.WstawSlowo(ref temp3ang, temp3, ref rotacja3);
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e.Message);
+                                break;
+                            }
+                            a.korzen = temp3ang;
+                            watch.Stop();
+                            Console.WriteLine("Dodano. Zajelo to: {0} milisekund", (double)watch.ElapsedMilliseconds);
+                            var ang1 = a.Wyszukaj(a.korzen, temp3);
+                            Wezel temp4pol = p.korzen;
+                            bool rotacja4 = false;
+                            watch = Stopwatch.StartNew();
+                            try
+                            {
+                                p.WstawSlowo(ref temp4pol, temp4, ref rotacja4);
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e.Message);
+                                break;
+                            }
+                            watch.Stop();
+                            Console.WriteLine("Dodano. Zajelo to: {0} milisekund", (double)watch.ElapsedMilliseconds);
+                            p.korzen = temp4pol;
+                            var pol1 = p.Wyszukaj(p.korzen, temp4);
+                            ang1.Tlumaczenie = pol1;
+                            pol1.Tlumaczenie = ang1;
+
                         }
-                        catch (Exception e)
+                        else
                         {
-                            Console.WriteLine(e.Message);
-                            //Usun wstawione slowo angielskie, poniewaz nie mozna wstawic tlumaczenia
-                            throw new NotImplementedException();
-                            break;
+                            if (temp4synonim == null)
+                            {
+                                Console.WriteLine("Słowo angielskie {0} znajduje sie juz w zbiorze, nie zostanie dodane", temp3synonim.Slowo);
+                                continue;
+                            }
+                            if (temp3synonim == null)
+                            {
+                                Console.WriteLine("Słowo polskie {0} znajduje sie juz w zbiorze, nie zostanie dodane", temp4synonim.Slowo);
+                                continue;
+                            }
+                            if (temp3synonim != null && temp4synonim != null)
+                            {
+                                Console.WriteLine("Słowo angielskie {0} i słowo polskie {1} znajdują sie juz w zbiorze, nie zostaną dodane", temp3synonim.Slowo, temp4synonim.Slowo);
+                                continue;
+                            }
+                            throw new Exception("Fatal error");
                         }
-                        watch.Stop();
-                        Console.WriteLine("Dodano. Zajelo to: {0} milisekund", (double)watch.ElapsedMilliseconds);
-                        p.korzen = temp4;
-                        var pol1 = p.Wyszukaj(p.korzen, input);
-                        ang1.Tlumaczenie = pol1;
-                        pol1.Tlumaczenie = ang1;
                         break;
 
                     case 3:
@@ -239,6 +283,7 @@ namespace AVL
                         Console.WriteLine();
                         break;
                     case 8:
+                        /*
                         Console.Clear();
                         for (int i = 0; i < 5; i++)
                         {
@@ -278,8 +323,10 @@ namespace AVL
                             tempPol.Tlumaczenie = tempAng;
                             a.WypiszDrzewoKLP(a.korzen);
                             Console.WriteLine();
-                        }
+                        } */
+                        Console.WriteLine("Ta usługa została wyłączona. Wykup AVL PREMIUM już dzisiaj !!!\n");
                         break;
+                                              
                 }
                 if (exit)
                     break;
