@@ -27,43 +27,52 @@ namespace AVL
                 p.CzyWywazone = false;
                 rotacja = false;
                 Debug.WriteLine("\t i={0}, substrings[i]={1}", i, substrings[i]);
-                if(a.Wyszukaj(a.korzen, substrings[i]) != null)
+                Wezel temp1 = a.Wyszukaj(a.korzen, substrings[i]);
+                Wezel temp2 = p.Wyszukaj(p.korzen, substrings[i + 1]);
+                if(temp1 == null && temp2 == null)
                 {
-                    if (substrings[i].CompareTo(a.Wyszukaj(a.korzen, substrings[i]).Slowo) == 0)
+                    try
+                    {
+                        rotacja = false;
+                        a.WstawSlowo(ref a.korzen, substrings[i], ref rotacja);
+                        rotacja = false;
+                        p.WstawSlowo(ref p.korzen, substrings[i + 1], ref rotacja);
+
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                        continue;
+                    }
+
+                    var ang = a.Wyszukaj(a.korzen, substrings[i]);
+                    var pl = p.Wyszukaj(p.korzen, substrings[i + 1]);
+                    ang.Tlumaczenie = pl;
+                    pl.Tlumaczenie = ang;
+                    Debug.WriteLine(pl.Tlumaczenie.Slowo);
+                    Debug.WriteLine(ang.Tlumaczenie.Slowo);
+                }
+                else
+                {
+                    if (temp2 == null)
                     {
                         Console.WriteLine("Słowo angielskie {0} znajduje sie juz w zbiorze, nie zostanie dodane", substrings[i]);
                         continue;
                     }
-                }
-
-                if(p.Wyszukaj(p.korzen, substrings[i + 1])!=null)
-                {
-                    if (substrings[i + 1].CompareTo(p.Wyszukaj(p.korzen, substrings[i + 1]).Slowo) == 0)
+                    if (temp1 == null)
                     {
                         Console.WriteLine("Słowo polskie {0} znajduje sie juz w zbiorze, nie zostanie dodane", substrings[i + 1]);
                         continue;
                     }
-                }
+                    if(temp1!=null && temp2 !=null)
+                    {
+                        Console.WriteLine("Słowo angielskie {0} i słowo polskie {1} znajdują sie juz w zbiorze, nie zostaną dodane", substrings[i], substrings[i + 1]);
+                        continue;
+                    }
+                    throw new Exception("Fatal error");
 
-                try 
-                {
-                    a.WstawSlowo(ref a.korzen, substrings[i], ref rotacja);
-                    p.WstawSlowo(ref p.korzen, substrings[i + 1], ref rotacja);
-
                 }
-                catch(Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                    continue;
-                }
-
-                var ang = a.Wyszukaj(a.korzen, substrings[i]);
-                rotacja = false;
-				var pl = p.Wyszukaj(p.korzen, substrings[i + 1]);
-                ang.Tlumaczenie = pl;
-                pl.Tlumaczenie = ang;
-                Debug.WriteLine(pl.Tlumaczenie.Slowo);
-                Debug.WriteLine(ang.Tlumaczenie.Slowo);
+               
             }
         }
         public void WypiszSlowa(Wezel korzen)
